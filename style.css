@@ -46,7 +46,6 @@
 	flex-direction: column;
 	outline: 2px outset rgba(0, 0, 0, .4);
 	outline-offset: -2px;
-	
 }
 
 .name {
@@ -158,4 +157,8 @@
 
 .hide {
 	display: none;
+}
+
+a {
+	text-decoration: none;
 }
