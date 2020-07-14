@@ -10,8 +10,23 @@ var promos = {};
 var randomizerDeck;
 var used = [];
 
-var chosenCards;
-var chosenLandscapes;
+var chosen = {
+	'Base': [],
+	'Intrigue': [],
+	'Seaside': [],
+	'Alchemy': [],
+	'Prosperity': [],
+	'Hinterlands': [],
+	'Dark Ages': [],
+	'Cornucopia': [],
+	'Guilds': [],
+	'Adventures': [],
+	'Empires': [],
+	'Nocturne': [],
+	'Renaissance': [],
+	'Menagerie': [],
+	'Promo': []
+};
 
 function init(json) {
 	for (let set of json.sets) {
@@ -26,14 +41,13 @@ function init(json) {
 function createRandomizerDeck() {
 	randomizerDeck = [];
 	randomizerDeck.push(...sets['Base']);
+	randomizerDeck.push(...sets['Intrigue']);
 	randomizerDeck.push(...sets['Prosperity']);
-	randomizerDeck.push(...sets['Nocturne']);
-	randomizerDeck.push(...sets['Renaissance']);
-	randomizerDeck.push(...sets['Guilds']);
 	randomizerDeck.push(...sets['Cornucopia']);
 	randomizerDeck.push(...sets['Dark Ages']);
 	randomizerDeck.push(...sets['Adventures']);
-	randomizerDeck.push(...sets['Intrigue']);
+	randomizerDeck.push(...sets['Nocturne']);
+	randomizerDeck.push(...sets['Renaissance']);
 	
 	randomizerDeck.push(promos['Black Market']);
 	randomizerDeck.push(promos['Governor']);
@@ -41,88 +55,82 @@ function createRandomizerDeck() {
 	shuffle(randomizerDeck);
 }
 
-function generate() {
-	chosenCards = [];
-	chosenLandscapes = [];
-	let skipped = [];
+window.onload = generate;
 
-	while (chosenCards.length < KINGDOM_SIZE) {
+function generate() {
+	for (let [set, cards] of Object.entries(chosen)) {
+		if (cards.length) {
+			cards.length = 0;
+			let setNode = document.getElementById(set);
+			setNode.parentNode.classList.add('hide');
+			while (setNode.firstChild) {
+				setNode.lastChild.remove();
+			}
+		}
+	}
+	
+	let skipped = [];
+	
+	let cardCount = 0;
+	let landscapeCount = 0;
+
+	while (cardCount < KINGDOM_SIZE) {
 		let rand = randomizerDeck.pop();
 		used.push(rand);
-		let target;
 		if (rand.landscape) {
-			target = chosenLandscapes.length < landscapeLimit
-					? chosenLandscapes 
-					: skipped;
-			
+			if (landscapeCount < 2) {
+				chosen[rand.set].push(rand);
+				landscapeCount++;
+			} else {
+				skipped.push(rand);
+			}
 		} else {
-			target = chosenCards;
+			chosen[rand.set].push(rand);
+			cardCount++;
 		}
-		target.push(rand);
 	}
 	
-	chosenCards.sort(cardComparator);
-	chosenLandscapes.sort(cardComparator);
-	
-	for (let i = 0; i < KINGDOM_SIZE; i++) {
-		cardTiles[i].setCard(chosenCards[i]);
-	}
-	
-	let i = 0;
-	for (; i < chosenLandscapes.length; i++) {
-		landscapeTiles[i].setCard(chosenLandscapes[i]);
-	}
-	for (; i < landscapeLimit; i++) {
-		landscapeTiles[i].hide();
+	for (let [set, cards] of Object.entries(chosen)) {
+		if (cards.length) {
+			let setNode = document.getElementById(set);
+			cards.sort(cardComparator);
+			for (let card of cards) {
+				createTile(setNode, card.landscape ? 'landscape' : 'card').setCard(card);
+			}
+			setNode.parentNode.classList.remove('hide');
+		}
 	}
 
 	shuffleInto(skipped, randomizerDeck);
 }
 
-var cardTiles = [];
-var landscapeTiles = [];
-
 function cardComparator(c1, c2) {
-	let categoryCmp = cardCategory(c1) - cardCategory(c2);
-	if (categoryCmp != 0) {
-		return categoryCmp;
-	}
-	let costCmp = (c1.coins || 0) + (c1.debt || 0) - (c2.coins || 0) + (c2.debt|| 0);
-	if (costCmp != 0) {
-		return costCmp;
+	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));
+	if (landscapeCmp != 0) {
+		return landscapeCmp;
 	}
 	return c1.name.localeCompare(c2.name);
 }
 
-function cardCategory(card) {
-	if (card.potion) {
-		return 1;
-	}
-	if (card.debt) {
-		return 2;
-	}
-	return 0;
-}
-
-window.onload = function() {
-	let cardContainer = document.getElementById('cards');
-	for (let i = 0; i < KINGDOM_SIZE; i++) {
-		cardTiles.push(createTile(cardContainer, 
-				'card', function(node, card) {
-					node.classList.add(...card.types);
-				}));
-	}
-	let landscapeContainer = document.getElementById('landscapes');
-	for (let i = 0; i < landscapeLimit; i++) {
-		landscapeTiles.push(createTile(landscapeContainer, 
-				'landscape', function(node, card) {
-					node.classList.add(card.landscape);
-				}));
-	}
-	generate();
-}
+const SET_INDEX = {
+	'Base': 0,
+	'Intrigue': 1,
+	'Seaside': 2,
+	'Alchemy': 3,
+	'Prosperity': 4,
+	// moving Cornucopia to be next to Guilds
+	'Hinterlands': 5,
+	'Dark Ages': 6,
+	'Cornucopia': 7,
+	'Guilds': 8,
+	'Adventures': 9,
+	'Empires': 10,
+	'Nocturne': 11,
+	'Renaissance': 12,
+	'Menagerie': 13
+};
 	
-function createTile(container, type, typeSetter) {
+function createTile(container, type) {
 	
 	// It's 2020 and we're still doing this!?
 	const tileNode = document.createElement('div');
@@ -145,7 +153,13 @@ function createTile(container, type, typeSetter) {
 			tileNode.classList.remove('hide');
 			nameNode.className = 'name';
 			card = newCard;
-			typeSetter(nameNode, card);
+			
+			if (type == 'card') {
+				nameNode.classList.add(...card.types);
+			} else {
+				nameNode.classList.add(card.landscape);
+			}
+			
 			nameNode.innerText = card.name;
 			nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
 			costNode.innerText = card.coins;

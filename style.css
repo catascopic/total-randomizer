@@ -18,19 +18,32 @@
 
 .kingdom {
 	display: flex;
+	
 }
 
-.cards {
+.set {
 	display: flex;
 	flex-wrap: wrap;
-	width: 600px;
-}
-
-.landscapes {
-	display: flex;
 	flex-direction: column;
 }
 
+.set-header{
+	height: 40px;
+	background-color: lightgray;
+	font-family: 'Nova Oval';
+	font-size: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	outline: 2px outset rgba(0, 0, 0, .4);
+	outline-offset: -2px;
+}
+
+.cards {
+	display: grid;
+	grid-auto-flow: column;
+	grid-template-rows: repeat(2, auto);
+}
 .card {
 	width: 120px;
 }
@@ -153,6 +166,81 @@
 .way, .Way {
 	background-color: var(--way);
 	color: black;
+}
+
+.base {
+	background-color: var(--action);
+	color: black;
+}
+
+.intrigue {
+	background-color: var(--action);
+	color: black;
+}
+
+.seaside {
+	background-color: SlateBlue;
+	color: black;
+}
+
+.alchemy {
+	background-color: Purple;
+	color: black;
+}
+
+.prosperity {
+	background-color: PaleGoldenrod;
+	color: black;
+}
+
+.hinterlands {
+	background-color: PaleGreen;
+	color: black;
+}
+
+.dark-ages {
+	background-color: SaddleBrown;
+	color: white;
+}
+
+.cornucopia {
+	background-color: DarkOrange;
+	color: black;
+}
+
+.guilds {
+	background-color: HotPink;
+	color: black;
+}
+
+.adventures {
+	background-color: SlateGray;
+	color: white;
+}
+
+.empires {
+	background-color: Gold;
+	color: black;
+}
+
+.nocturne {
+	background-color: MidnightBlue;
+	color: white;
+}
+
+.renaissance {
+	background-color: DarkTurquoise;
+	color: black;
+}
+
+.menagerie {
+	background-color: Tan;
+	color: black;
+}
+
+.promo {
+	background-color: Black;
+	color: white;
 }
 
 .hide {
