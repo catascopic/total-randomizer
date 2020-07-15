@@ -40,18 +40,18 @@ function init(json) {
 
 function createRandomizerDeck() {
 	randomizerDeck = [];
-	randomizerDeck.push(...sets['Base']);
+	// randomizerDeck.push(...sets['Base']);
 	randomizerDeck.push(...sets['Intrigue']);
-	randomizerDeck.push(...sets['Prosperity']);
-	randomizerDeck.push(...sets['Cornucopia']);
+	// randomizerDeck.push(...sets['Prosperity']);
+	// randomizerDeck.push(...sets['Cornucopia']);
 	randomizerDeck.push(...sets['Dark Ages']);
 	randomizerDeck.push(...sets['Adventures']);
 	randomizerDeck.push(...sets['Nocturne']);
-	randomizerDeck.push(...sets['Renaissance']);
+	// randomizerDeck.push(...sets['Renaissance']);
 	
-	randomizerDeck.push(promos['Black Market']);
-	randomizerDeck.push(promos['Governor']);
-	randomizerDeck.push(promos['Prince']);
+	// randomizerDeck.push(promos['Black Market']);
+	// randomizerDeck.push(promos['Governor']);
+	// randomizerDeck.push(promos['Prince']);
 	shuffle(randomizerDeck);
 }
 
