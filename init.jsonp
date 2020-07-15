@@ -1563,16 +1563,6 @@ init({
 					]
 				},
 				{
-					"name": "Knights",
-					"set": "Dark Ages",
-					"coins": 5,
-					"types": [
-						"Action",
-						"Attack",
-						"Knight"
-					]
-				},
-				{
 					"name": "Mystic",
 					"set": "Dark Ages",
 					"coins": 5,
@@ -1620,6 +1610,16 @@ init({
 					"coins": 6,
 					"types": [
 						"Action"
+					]
+				},
+				{
+					"name": "Knights",
+					"set": "Dark Ages",
+					"coins": 5,
+					"types": [
+						"Action",
+						"Attack",
+						"Knight"
 					]
 				}
 			]
@@ -2162,6 +2162,39 @@ init({
 					]
 				},
 				{
+					"name": "Encampment/Plunder",
+					"set": "Empires",
+					"coins": 2,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Patrician/Emporium",
+					"set": "Empires",
+					"coins": 2,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Settlers/Bustling Village",
+					"set": "Empires",
+					"coins": 2,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Catapult/Rocks",
+					"set": "Empires",
+					"coins": 3,
+					"types": [
+						"Action",
+						"Attack"
+					]
+				},
+				{
 					"name": "Chariot Race",
 					"set": "Empires",
 					"coins": 3,
@@ -2186,6 +2219,14 @@ init({
 					"types": [
 						"Action",
 						"Gathering"
+					]
+				},
+				{
+					"name": "Gladiator/Fortune",
+					"set": "Empires",
+					"coins": 3,
+					"types": [
+						"Action"
 					]
 				},
 				{
@@ -2279,6 +2320,15 @@ init({
 					"types": [
 						"Action",
 						"Gathering"
+					]
+				},
+				{
+					"name": "Castles",
+					"set": "Empires",
+					"coins": 3,
+					"types": [
+						"Victory",
+						"Castle"
 					]
 				},
 				{
@@ -3104,6 +3154,7 @@ init({
 					"coins": 2,
 					"types": [
 						"Action",
+						"Attack",
 						"Reaction"
 					]
 				},
@@ -3136,23 +3187,6 @@ init({
 					"name": "Goatherd",
 					"set": "Menagerie",
 					"coins": 3,
-					"types": [
-						"Action"
-					]
-				},
-				{
-					"name": "Cardinal",
-					"set": "Menagerie",
-					"coins": 4,
-					"types": [
-						"Action",
-						"Attack"
-					]
-				},
-				{
-					"name": "Groom",
-					"set": "Menagerie",
-					"coins": 4,
 					"types": [
 						"Action"
 					]
@@ -3199,6 +3233,49 @@ init({
 					]
 				},
 				{
+					"name": "Cardinal",
+					"set": "Menagerie",
+					"coins": 4,
+					"types": [
+						"Action",
+						"Attack"
+					]
+				},
+				{
+					"name": "Cavalry",
+					"set": "Menagerie",
+					"coins": 4,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Groom",
+					"set": "Menagerie",
+					"coins": 4,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Hostelry",
+					"set": "Menagerie",
+					"coins": 4,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Village Green",
+					"set": "Menagerie",
+					"coins": 4,
+					"types": [
+						"Action",
+						"Duration",
+						"Reaction"
+					]
+				},
+				{
 					"name": "Barge",
 					"set": "Menagerie",
 					"coins": 5,
@@ -3214,6 +3291,41 @@ init({
 					"types": [
 						"Action",
 						"Attack"
+					]
+				},
+				{
+					"name": "Displace",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Falconer",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action",
+						"Reaction"
+					]
+				},
+				{
+					"name": "Gatekeeper",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action",
+						"Duration",
+						"Attack"
+					]
+				},
+				{
+					"name": "Hunting Lodge",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action"
 					]
 				},
 				{
@@ -3233,6 +3345,15 @@ init({
 					]
 				},
 				{
+					"name": "Mastermind",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action",
+						"Duration"
+					]
+				},
+				{
 					"name": "Paddock",
 					"set": "Menagerie",
 					"coins": 5,
@@ -3241,12 +3362,27 @@ init({
 					]
 				},
 				{
-					"name": "Mastermind",
+					"name": "Sanctuary",
 					"set": "Menagerie",
 					"coins": 5,
 					"types": [
-						"Action",
-						"Duration"
+						"Action"
+					]
+				},
+				{
+					"name": "Fisherman",
+					"set": "Menagerie",
+					"coins": 5,
+					"types": [
+						"Action"
+					]
+				},
+				{
+					"name": "Destrier",
+					"set": "Menagerie",
+					"coins": 6,
+					"types": [
+						"Action"
 					]
 				},
 				{
@@ -3266,13 +3402,91 @@ init({
 					]
 				},
 				{
+					"name": "Delay",
+					"set": "Menagerie",
+					"coins": 0,
+					"landscape": "Event"
+				},
+				{
+					"name": "Desperation",
+					"set": "Menagerie",
+					"coins": 0,
+					"landscape": "Event"
+				},
+				{
+					"name": "Gamble",
+					"set": "Menagerie",
+					"coins": 2,
+					"landscape": "Event"
+				},
+				{
+					"name": "Pursue",
+					"set": "Menagerie",
+					"coins": 2,
+					"landscape": "Event"
+				},
+				{
+					"name": "Ride",
+					"set": "Menagerie",
+					"coins": 2,
+					"landscape": "Event"
+				},
+				{
 					"name": "Toil",
 					"set": "Menagerie",
 					"coins": 2,
 					"landscape": "Event"
 				},
 				{
+					"name": "Enhance",
+					"set": "Menagerie",
+					"coins": 3,
+					"landscape": "Event"
+				},
+				{
+					"name": "March",
+					"set": "Menagerie",
+					"coins": 3,
+					"landscape": "Event"
+				},
+				{
+					"name": "Transport",
+					"set": "Menagerie",
+					"coins": 3,
+					"landscape": "Event"
+				},
+				{
+					"name": "Banish",
+					"set": "Menagerie",
+					"coins": 4,
+					"landscape": "Event"
+				},
+				{
+					"name": "Bargain",
+					"set": "Menagerie",
+					"coins": 4,
+					"landscape": "Event"
+				},
+				{
+					"name": "Invest",
+					"set": "Menagerie",
+					"coins": 4,
+					"landscape": "Event"
+				},
+				{
+					"name": "Seize the Day",
+					"set": "Menagerie",
+					"coins": 4,
+					"landscape": "Event"
+				},
+				{
 					"name": "Commerce",
+					"set": "Menagerie",
+					"coins": 5,
+					"landscape": "Event"
+				},
+				{
+					"name": "Demand",
 					"set": "Menagerie",
 					"coins": 5,
 					"landscape": "Event"
@@ -3284,13 +3498,51 @@ init({
 					"landscape": "Event"
 				},
 				{
+					"name": "Reap",
+					"set": "Menagerie",
+					"coins": 7,
+					"landscape": "Event"
+				},
+				{
+					"name": "Enclave",
+					"set": "Menagerie",
+					"coins": 8,
+					"landscape": "Event"
+				},
+				{
+					"name": "Alliance",
+					"set": "Menagerie",
+					"coins": 10,
+					"landscape": "Event"
+				},
+				{
 					"name": "Populate",
 					"set": "Menagerie",
 					"coins": 10,
 					"landscape": "Event"
 				},
 				{
+					"name": "Way of the Butterfly",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Camel",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
 					"name": "Way of the Chameleon",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Frog",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Goat",
 					"set": "Menagerie",
 					"landscape": "Way"
 				},
@@ -3301,6 +3553,31 @@ init({
 				},
 				{
 					"name": "Way of the Mole",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Monkey",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Mouse",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Mule",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Otter",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Owl",
 					"set": "Menagerie",
 					"landscape": "Way"
 				},
@@ -3320,6 +3597,11 @@ init({
 					"landscape": "Way"
 				},
 				{
+					"name": "Way of the Seal",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
 					"name": "Way of the Sheep",
 					"set": "Menagerie",
 					"landscape": "Way"
@@ -3331,6 +3613,11 @@ init({
 				},
 				{
 					"name": "Way of the Turtle",
+					"set": "Menagerie",
+					"landscape": "Way"
+				},
+				{
+					"name": "Way of the Worm",
 					"set": "Menagerie",
 					"landscape": "Way"
 				}
@@ -3365,6 +3652,14 @@ init({
 		},
 		{
 			"name": "Envoy",
+			"set": "Promo",
+			"coins": 4,
+			"types": [
+				"Action"
+			]
+		},
+		{
+			"name": "Sauna/Avanto",
 			"set": "Promo",
 			"coins": 4,
 			"types": [
