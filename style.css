@@ -19,6 +19,7 @@
 .kingdom {
 	display: flex;
 	flex-wrap: wrap;
+	gap: 20px;
 }
 
 .set {
@@ -27,17 +28,16 @@
 	flex-direction: column;
 }
 
-.set-header{
+.set-header {
 	height: 30px;
+	margin-bottom: 6px;
 	background-color: lightgray;
 	font-family: 'Fira Sans';
 	font-size: 16px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	outline: 2px outset rgba(0, 0, 0, .4);
-	outline-offset: -2px;
-	/* border-radius: 10px 10px 0 0; */
+	/* border-radius: 15px 15px 0 0; */
 }
 
 .cards {
