@@ -97,7 +97,7 @@ function generate() {
 			let setNode = document.getElementById(set);
 			cards.sort(cardComparator);
 			for (let card of cards) {
-				createTile(setNode, card.landscape ? 'landscape' : 'card').setCard(card);
+				createTile(setNode, card);
 			}
 			setNode.parentNode.classList.remove('hide');
 		}
@@ -132,11 +132,11 @@ const SET_INDEX = {
 	'Menagerie': 13
 };
 	
-function createTile(container, type) {
+function createTile(container, card) {
 	
 	// It's 2020 and we're still doing this!?
 	const tileNode = document.createElement('div');
-	tileNode.className = type;
+	tileNode.className = card.landscape ? 'landscape' : 'card';
 	const nameNode = document.createElement('a');
 	nameNode.className = 'name';
 	nameNode.target = '_blank';
@@ -147,37 +147,26 @@ function createTile(container, type) {
 	tileNode.append(artNode);
 	tileNode.append(costNode);
 	container.append(tileNode);
-	
-	let card;
-	
-	return {
-		setCard: function(newCard) {
-			tileNode.classList.remove('hide');
-			nameNode.className = 'name';
-			card = newCard;
-			
-			if (type == 'card') {
-				nameNode.classList.add(...card.types);
-			} else {
-				nameNode.classList.add(card.landscape);
-			}
-			
-			nameNode.innerText = card.name;
-			nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
 
-			if (card.coins != undefined) {
-				costNode.classList.remove('hide');
-				costNode.innerText = card.coins;
-			} else {
-				costNode.classList.add('hide');
-			}
-			
-			artNode.src = `art160/${getImageFileName(card.name)}.png`;
-		},
-		hide: function() {
-			tileNode.classList.add('hide');
-		}
-	};
+	nameNode.className = 'name';
+	
+	if (card.landscape) {
+		tileNode.classList.add(card.landscape);
+	} else {
+		tileNode.classList.add(...card.types);
+	}
+
+	nameNode.innerText = card.name;
+	nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
+
+	if (card.coins != undefined) {
+		costNode.classList.remove('hide');
+		costNode.innerText = card.coins;
+	} else {
+		costNode.classList.add('hide');
+	}
+	
+	artNode.src = `art/${getImageFileName(card.name)}.png`;
 }
 
 function shuffleInto(cards, deck) {

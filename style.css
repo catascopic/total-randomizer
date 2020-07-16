@@ -1,21 +1,3 @@
-:root {
-	--set-color: #0276FD;
-	--promo-color: #E3170D;
-
-	--action: gainsboro;
-	--victory: #7BCC70; /* nightvision */
-	--reaction: #4F94CD; /* steelblue */
-	--treasure: #FBDB0C; /* gummi yellow */
-	--duration: #ED9121; /* carrot */
-	--night: dimgray;
-	--reserve: #B5A642; /* brass */
-
-	--event: silver;
-	--landmark: #55AE3A; /* leaf */
-	--project: lightcoral;
-	--way: #82CFFD; /* blue mist */
-}
-
 .kingdom {
 	display: flex;
 	flex-wrap: wrap;
@@ -29,15 +11,14 @@
 }
 
 .set-header {
-	height: 30px;
-	margin-bottom: 6px;
-	background-color: lightgray;
+	height: 32px;
+	margin-bottom: 8px;
 	font-family: 'Fira Sans';
 	font-size: 16px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	/* border-radius: 15px 15px 0 0; */
+	/* border-radius: 16px 16px 0 0; */
 }
 
 .cards {
@@ -45,16 +26,16 @@
 }
 
 .card {
-	width: 160px;
+	width: 120px;
 }
 
 .landscape {
-	width: 240px;
+	width: 180px;
 }
 
 .card, .landscape {
 	position: relative;
-	height: 160px;
+	height: 120px;
 	display: flex;
 	flex-direction: column;
 	outline: 2px outset rgba(0, 0, 0, .4);
@@ -63,11 +44,11 @@
 
 .name {
 	font-family: 'Nova Oval';
-	font-size: 16px;
+	font-size: 14px;
 	text-align: center;
 	width: 100%;
-	height: 24px;
-	line-height: 25px;
+	height: 20px;
+	line-height: 22px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -113,140 +94,11 @@
 	user-select: none;
 }
 
-.action, .Action {
-	background-color: var(--action);
-	color: black;
-}
-
-.reaction, .Reaction {
-	background-color: var(--reaction);
-	color: black;
-}
-
-.treasure, .Treasure {
-	background-color: var(--treasure);
-	color: black;
-}
-
-.victory, .Victory {
-	background-color: var(--victory);
-	color: black;
-}
-
-.reserve, .Reserve {
-	background-color: var(--reserve);
-	color: black;
-}
-
-.night, .Night {
-	background-color: var(--night);
-	color: white;
-}
-
-.duration, .Duration {
-	background-color: var(--duration);
-	color: black;
-}
-
-.event, .Event {
-	background-color: var(--event);
-	color: black;
-}
-
-.landmark, .Landmark {
-	background-color: var(--landmark);
-	color: black;
-}
-
-.project, .Project {
-	background-color: var(--project);
-	color: black;
-}
-
-.way, .Way {
-	background-color: var(--way);
-	color: black;
-}
-
-.base {
-	background-color: var(--action);
-	color: black;
-}
-
-.intrigue {
-	background-color: var(--action);
-	color: black;
-}
-
-.seaside {
-	background-color: SlateBlue;
-	color: black;
-}
-
-.alchemy {
-	background-color: Purple;
-	color: black;
-}
-
-.prosperity {
-	background-color: PaleGoldenrod;
-	color: black;
-}
-
-.hinterlands {
-	background-color: PaleGreen;
-	color: black;
-}
-
-.dark-ages {
-	background-color: #CD6600; /* darkorange3 */
-	color: white;
-}
-
-.cornucopia {
-	background-color: DarkOrange;
-	color: black;
-}
-
-.guilds {
-	background-color: HotPink;
-	color: black;
-}
-
-.adventures {
-	background-color: SlateGray;
-	color: white;
-}
-
-.empires {
-	background-color: Gold;
-	color: black;
-}
-
-.nocturne {
-	background-color: #1B3F8B; /* alaska sky */
-	color: white;
-}
-
-.renaissance {
-	background-color: DarkTurquoise;
-	color: black;
-}
-
-.menagerie {
-	background-color: Tan;
-	color: black;
-}
-
-.promo {
-	background-color: Black;
-	color: white;
-}
-
 .hide {
 	display: none;
 }
 
 a {
+	color: inherit;
 	text-decoration: none;
 }

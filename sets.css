@@ -1,0 +1,74 @@
+.base {
+	background-color: Gainsboro;
+	color: black;
+}
+
+.intrigue {
+	background-color: Gainsboro;
+	color: black;
+}
+
+.seaside {
+	background-color: SlateBlue;
+	color: black;
+}
+
+.alchemy {
+	background-color: Purple;
+	color: black;
+}
+
+.prosperity {
+	background-color: PaleGoldenrod;
+	color: black;
+}
+
+.hinterlands {
+	background-color: PaleGreen;
+	color: black;
+}
+
+.dark-ages {
+	background-color: #CD6600; /* darkorange3 */
+	color: white;
+}
+
+.cornucopia {
+	background-color: DarkOrange;
+	color: black;
+}
+
+.guilds {
+	background-color: HotPink;
+	color: black;
+}
+
+.adventures {
+	background-color: SlateGray;
+	color: white;
+}
+
+.empires {
+	background-color: Gold;
+	color: black;
+}
+
+.nocturne {
+	background-color: #1B3F8B; /* alaska sky */
+	color: white;
+}
+
+.renaissance {
+	background-color: DarkTurquoise;
+	color: black;
+}
+
+.menagerie {
+	background-color: Tan;
+	color: black;
+}
+
+.promo {
+	background-color: Black;
+	color: white;
+}
