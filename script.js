@@ -163,7 +163,14 @@ function createTile(container, type) {
 			
 			nameNode.innerText = card.name;
 			nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
-			costNode.innerText = card.coins;
+
+			if (card.coins) {
+				costNode.classList.remove('hide');
+				costNode.innerText = card.coins;
+			} else {
+				costNode.classList.add('hide');
+			}
+			
 			artNode.src = `art/${getImageFileName(card.name)}.png`;
 		},
 		hide: function() {
