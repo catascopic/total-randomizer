@@ -8,7 +8,6 @@ var sets = {};
 var promos = {};
 
 var randomizerDeck;
-var used = [];
 
 var chosen = {
 	'Base': [],
@@ -48,7 +47,7 @@ function createRandomizerDeck() {
 	// randomizerDeck.push(...sets['Guilds']);
 	// randomizerDeck.push(...sets['Adventures']);
 	randomizerDeck.push(...sets['Nocturne']);
-	randomizerDeck.push(...sets['Renaissance']);
+	// randomizerDeck.push(...sets['Renaissance']);
 	randomizerDeck.push(...sets['Menagerie']);
 	
 	randomizerDeck.push(promos['Black Market']);
@@ -75,23 +74,24 @@ function generate() {
 	
 	let cardCount = 0;
 	let landscapeCount = 0;
+	let landscapeTypeCounts = {};
 
 	while (cardCount < KINGDOM_SIZE) {
 		let rand = randomizerDeck.pop();
-		used.push(rand);
 		if (rand.landscape) {
-			if (landscapeCount < 2) {
-				chosen[rand.set].push(rand);
-				landscapeCount++;
-			} else {
+			console.log(rand.name);
+			if (landscapeCount >= landscapeLimit || !checkLandscapeTypeLimit(landscapeTypeCounts, rand)) {
 				skipped.push(rand);
+				continue;
 			}
+			landscapeTypeCounts[rand.landscape] = (landscapeTypeCounts[rand.landscape] || 0) + 1;
+			landscapeCount++;
 		} else {
-			chosen[rand.set].push(rand);
 			cardCount++;
 		}
+		chosen[rand.set].push(rand);
 	}
-	
+
 	for (let [set, cards] of Object.entries(chosen)) {
 		if (cards.length) {
 			let setNode = document.getElementById(set);
@@ -106,6 +106,11 @@ function generate() {
 	shuffleInto(skipped, randomizerDeck);
 }
 
+function checkLandscapeTypeLimit(landscapeTypeCounts, rand) {
+	let typeLimit = landscapeTypeLimits[rand.landscape];
+	return typeLimit == undefined || (landscapeTypeCounts[rand.landscape] || 0) < typeLimit;
+}
+
 function cardComparator(c1, c2) {
 	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));
 	if (landscapeCmp != 0) {
@@ -113,24 +118,6 @@ function cardComparator(c1, c2) {
 	}
 	return c1.name.localeCompare(c2.name);
 }
-
-const SET_INDEX = {
-	'Base': 0,
-	'Intrigue': 1,
-	'Seaside': 2,
-	'Alchemy': 3,
-	'Prosperity': 4,
-	// moving Cornucopia to be next to Guilds
-	'Hinterlands': 5,
-	'Dark Ages': 6,
-	'Cornucopia': 7,
-	'Guilds': 8,
-	'Adventures': 9,
-	'Empires': 10,
-	'Nocturne': 11,
-	'Renaissance': 12,
-	'Menagerie': 13
-};
 	
 function createTile(container, card) {
 	
@@ -157,7 +144,7 @@ function createTile(container, card) {
 	}
 
 	nameNode.innerText = card.name;
-	nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
+	nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name.replace(/ /g, '_');
 
 	if (card.coins != undefined) {
 		costNode.classList.remove('hide');

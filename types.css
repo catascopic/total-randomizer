@@ -3,6 +3,11 @@
 	color: black;
 }
 
+.reaction, .Reaction {
+	background-color: #4F94CD; /* steelblue */
+	color: black;
+}
+
 .treasure, .Treasure {
 	background-color: #FBDB0C; /* gummi yellow */
 	color: black;
@@ -10,16 +15,6 @@
 
 .victory, .Victory {
 	background-color: #7BCC70; /* nightvision */
-	color: black;
-}
-
-.reaction, .Reaction {
-	background-color: #4F94CD; /* steelblue */
-	color: black;
-}
-
-.duration, .Duration {
-	background-color: #ED9121; /* carrot */
 	color: black;
 }
 
@@ -31,6 +26,11 @@
 .night, .Night {
 	background-color: DimGray;
 	color: white;
+}
+
+.duration, .Duration {
+	background-color: #ED9121; /* carrot */
+	color: black;
 }
 
 /* Landscapes */
