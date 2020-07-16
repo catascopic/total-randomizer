@@ -41,14 +41,15 @@ function init(json) {
 function createRandomizerDeck() {
 	randomizerDeck = [];
 	randomizerDeck.push(...sets['Base']);
-	randomizerDeck.push(...sets['Intrigue']);
-	randomizerDeck.push(...sets['Prosperity']);
-	randomizerDeck.push(...sets['Dark Ages']);
-	randomizerDeck.push(...sets['Cornucopia']);
-	randomizerDeck.push(...sets['Guilds']);
-	randomizerDeck.push(...sets['Adventures']);
+	// randomizerDeck.push(...sets['Intrigue']);
+	// randomizerDeck.push(...sets['Prosperity']);
+	// randomizerDeck.push(...sets['Dark Ages']);
+	// randomizerDeck.push(...sets['Cornucopia']);
+	// randomizerDeck.push(...sets['Guilds']);
+	// randomizerDeck.push(...sets['Adventures']);
 	randomizerDeck.push(...sets['Nocturne']);
 	randomizerDeck.push(...sets['Renaissance']);
+	randomizerDeck.push(...sets['Menagerie']);
 	
 	randomizerDeck.push(promos['Black Market']);
 	randomizerDeck.push(promos['Governor']);
@@ -164,14 +165,14 @@ function createTile(container, type) {
 			nameNode.innerText = card.name;
 			nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name;
 
-			if (card.coins) {
+			if (card.coins != undefined) {
 				costNode.classList.remove('hide');
 				costNode.innerText = card.coins;
 			} else {
 				costNode.classList.add('hide');
 			}
 			
-			artNode.src = `art/${getImageFileName(card.name)}.png`;
+			artNode.src = `art160/${getImageFileName(card.name)}.png`;
 		},
 		hide: function() {
 			tileNode.classList.add('hide');
