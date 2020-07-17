@@ -1,31 +1,26 @@
+const KINGDOM_SIZE = 10;
 var landscapeLimit = 2;
 var landscapeTypeLimits = {
 	Way: 1
 };
-const KINGDOM_SIZE = 10;
 
 var sets = {};
 var promos = {};
 
 var randomizerDeck;
 
-var chosen = {
-	'Base': [],
-	'Intrigue': [],
-	'Seaside': [],
-	'Alchemy': [],
-	'Prosperity': [],
-	'Hinterlands': [],
-	'Dark Ages': [],
-	'Cornucopia': [],
-	'Guilds': [],
-	'Adventures': [],
-	'Empires': [],
-	'Nocturne': [],
-	'Renaissance': [],
-	'Menagerie': [],
-	'Promo': []
-};
+var chosen;
+var used = [];
+
+var SETS = [
+	'Base', 'Intrigue', 'Seaside', 'Alchemy', 
+	'Prosperity', 'Hinterlands', 'Dark Ages', 'Cornucopia', 
+	'Guilds', 'Adventures', 'Empires', 'Nocturne', 
+	'Renaissance', 'Menagerie', 
+	'Promo'
+];
+
+var displayers = [];
 
 function init(json) {
 	for (let set of json.sets) {
@@ -43,11 +38,11 @@ function createRandomizerDeck() {
 	// randomizerDeck.push(...sets['Intrigue']);
 	// randomizerDeck.push(...sets['Prosperity']);
 	// randomizerDeck.push(...sets['Dark Ages']);
-	// randomizerDeck.push(...sets['Cornucopia']);
-	// randomizerDeck.push(...sets['Guilds']);
+	randomizerDeck.push(...sets['Cornucopia']);
+	randomizerDeck.push(...sets['Guilds']);
 	// randomizerDeck.push(...sets['Adventures']);
 	randomizerDeck.push(...sets['Nocturne']);
-	// randomizerDeck.push(...sets['Renaissance']);
+	randomizerDeck.push(...sets['Renaissance']);
 	randomizerDeck.push(...sets['Menagerie']);
 	
 	randomizerDeck.push(promos['Black Market']);
@@ -56,22 +51,25 @@ function createRandomizerDeck() {
 	shuffle(randomizerDeck);
 }
 
-window.onload = generate;
+window.onload = function() {
+	let kingdom = document.getElementById('kingdom');
+	for (let setName of SETS) {
+		displayers.push({
+			display: createSet(setName, kingdom),
+			name: setName
+		});
+	}
+	generate();
+};
 
 function generate() {
-	for (let [set, cards] of Object.entries(chosen)) {
-		if (cards.length) {
-			cards.length = 0;
-			let setNode = document.getElementById(set);
-			setNode.parentNode.classList.add('hide');
-			while (setNode.firstChild) {
-				setNode.lastChild.remove();
-			}
-		}
+	
+	chosen = {};
+	for (let setName of SETS) {
+		chosen[setName] = [];
 	}
 	
 	let skipped = [];
-	
 	let cardCount = 0;
 	let landscapeCount = 0;
 	let landscapeTypeCounts = {};
@@ -79,7 +77,6 @@ function generate() {
 	while (cardCount < KINGDOM_SIZE) {
 		let rand = randomizerDeck.pop();
 		if (rand.landscape) {
-			console.log(rand.name);
 			if (landscapeCount >= landscapeLimit || !checkLandscapeTypeLimit(landscapeTypeCounts, rand)) {
 				skipped.push(rand);
 				continue;
@@ -90,20 +87,16 @@ function generate() {
 			cardCount++;
 		}
 		chosen[rand.set].push(rand);
+		used.push(rand);
 	}
-
-	for (let [set, cards] of Object.entries(chosen)) {
-		if (cards.length) {
-			let setNode = document.getElementById(set);
-			cards.sort(cardComparator);
-			for (let card of cards) {
-				createTile(setNode, card);
-			}
-			setNode.parentNode.classList.remove('hide');
-		}
-	}
-
+	
 	shuffleInto(skipped, randomizerDeck);
+	
+	for (let displayer of displayers) {
+		let cards = chosen[displayer.name];
+		cards.sort(cardComparator);
+		displayer.display(cards);
+	}
 }
 
 function checkLandscapeTypeLimit(landscapeTypeCounts, rand) {
@@ -117,43 +110,6 @@ function cardComparator(c1, c2) {
 		return landscapeCmp;
 	}
 	return c1.name.localeCompare(c2.name);
-}
-	
-function createTile(container, card) {
-	
-	// It's 2020 and we're still doing this!?
-	const tileNode = document.createElement('div');
-	tileNode.className = card.landscape ? 'landscape' : 'card';
-	const nameNode = document.createElement('a');
-	nameNode.className = 'name';
-	nameNode.target = '_blank';
-	const artNode = document.createElement('img');
-	const costNode = document.createElement('div');
-	costNode.className = 'cost';
-	tileNode.append(nameNode);
-	tileNode.append(artNode);
-	tileNode.append(costNode);
-	container.append(tileNode);
-
-	nameNode.className = 'name';
-	
-	if (card.landscape) {
-		tileNode.classList.add(card.landscape);
-	} else {
-		tileNode.classList.add(...card.types);
-	}
-
-	nameNode.innerText = card.name;
-	nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name.replace(/ /g, '_');
-
-	if (card.coins != undefined) {
-		costNode.classList.remove('hide');
-		costNode.innerText = card.coins;
-	} else {
-		costNode.classList.add('hide');
-	}
-	
-	artNode.src = `art/${getImageFileName(card.name)}.png`;
 }
 
 function shuffleInto(cards, deck) {
@@ -177,8 +133,4 @@ function swap(array, i, j) {
 	let temp = array[i];
 	array[i] = array[j];
 	array[j] = temp;
-}
-
-function getImageFileName(cardName) {
-	return cardName.toLowerCase().replace(/[ \-\/]+/g, '_').replace(/[^a-z_]+/g, '');
 }
