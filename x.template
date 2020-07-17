@@ -1,0 +1,26 @@
+@{set w = 0}
+@{set s = 24}
+@{set c = s / 2}
+@{set t = 5}
+<svg height="${s + w * 2}" width="${s + w * 2}" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="
+	${0},${t}
+	${c - t},${c}
+	${0},${s - t}
+	${t},${s}
+	${c},${c + t}
+	${s - t},${s}
+	${s},${s - t}
+	${c + t},${c}
+	${s},${t}
+	${s - t},${0}
+	${c},${c - t}
+	${t},${0}"
+	fill="red" 
+	@{if w}
+	stroke="black"
+	stroke-width="${w}"
+	transform="translate(${w},${w})" 
+	@{end}
+	/>
+</svg>

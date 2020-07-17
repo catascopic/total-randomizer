@@ -13,11 +13,9 @@ var chosen;
 var used = [];
 
 var SETS = [
-	'Base', 'Intrigue', 'Seaside', 'Alchemy', 
-	'Prosperity', 'Hinterlands', 'Dark Ages', 'Cornucopia', 
-	'Guilds', 'Adventures', 'Empires', 'Nocturne', 
-	'Renaissance', 'Menagerie', 
-	'Promo'
+	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
+	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
+	'Renaissance', 'Menagerie', 'Promo'
 ];
 
 var displayers = [];
@@ -35,15 +33,15 @@ function init(json) {
 function createRandomizerDeck() {
 	randomizerDeck = [];
 	randomizerDeck.push(...sets['Base']);
-	// randomizerDeck.push(...sets['Intrigue']);
-	// randomizerDeck.push(...sets['Prosperity']);
-	// randomizerDeck.push(...sets['Dark Ages']);
+	randomizerDeck.push(...sets['Intrigue']);
+	randomizerDeck.push(...sets['Prosperity']);
+	randomizerDeck.push(...sets['Dark Ages']);
 	randomizerDeck.push(...sets['Cornucopia']);
 	randomizerDeck.push(...sets['Guilds']);
-	// randomizerDeck.push(...sets['Adventures']);
+	randomizerDeck.push(...sets['Adventures']);
 	randomizerDeck.push(...sets['Nocturne']);
 	randomizerDeck.push(...sets['Renaissance']);
-	randomizerDeck.push(...sets['Menagerie']);
+	// randomizerDeck.push(...sets['Menagerie']);
 	
 	randomizerDeck.push(promos['Black Market']);
 	randomizerDeck.push(promos['Governor']);
