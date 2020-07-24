@@ -1,74 +1,154 @@
+:root {
+	--base: Peru;
+	--intrigue: LightSlateGray;
+	--seaside: SlateBlue;
+	--alchemy: Purple;
+	--prosperity: #CDE472; /* iceberg lettuce */
+	--hinterlands: PaleGreen;
+	--dark-ages: #CD6600; /* darkorange3 */
+	--cornucopia: Orange;
+	--guilds: HotPink;
+	--adventures: SlateGray;
+	--empires: Gold;
+	--nocturne: #1B3F8B; /* alaska sky */
+	--renaissance: #7AE5EB; /* variant of cadetblue2 */
+	--menagerie: tan;
+	--promo: black;
+}
+
 .base {
-	background-color: Gainsboro;
+	background-color: var(--base);
 	color: black;
 }
 
 .intrigue {
-	background-color: Gainsboro;
+	background-color: var(--intrigue);
 	color: black;
 }
 
 .seaside {
-	background-color: SlateBlue;
-	color: black;
+	background-color: var(--seaside);
+	color: white;
 }
 
 .alchemy {
-	background-color: Purple;
-	color: black;
+	background-color: var(--alchemy);
+	color: white;
 }
 
 .prosperity {
-	background-color: #CDE472; /* iceberg lettuce */
+	background-color: var(--prosperity);
 	color: black;
 }
 
 .hinterlands {
-	background-color: PaleGreen;
+	background-color: var(--hinterlands);
 	color: black;
 }
 
 .dark-ages {
-	background-color: #CD6600; /* darkorange3 */
+	background-color: var(--dark-ages);
 	color: white;
 }
 
 .cornucopia {
-	background-color: DarkOrange;
+	background-color: var(--cornucopia);
 	color: black;
 }
 
 .guilds {
-	background-color: HotPink;
+	background-color: var(--guilds);
 	color: black;
 }
 
 .adventures {
-	background-color: SlateGray;
+	background-color: var(--adventures);
 	color: white;
 }
 
 .empires {
-	background-color: Gold;
+	background-color: var(--empires);
 	color: black;
 }
 
 .nocturne {
-	background-color: #1B3F8B; /* alaska sky */
+	background-color: var(--nocturne);
 	color: white;
 }
 
 .renaissance {
-	background-color: #7AE5EB; /* variant of cadetblue2 */
+	background-color: var(--renaissance);
 	color: black;
 }
 
 .menagerie {
-	background-color: Tan;
+	background-color: var(--menagerie);
 	color: black;
 }
 
 .promo {
-	background-color: Black;
+	background-color: var(--promo);
 	color: white;
+}
+
+/* SELECTORS */
+
+.base-selector {
+	border-color: var(--base);
+}
+
+.intrigue-selector {
+	border-color: var(--intrigue);
+}
+
+.seaside-selector {
+	border-color: var(--seaside);
+}
+
+.alchemy-selector {
+	border-color: var(--alchemy);
+}
+
+.prosperity-selector {
+	border-color: var(--prosperity);
+}
+
+.hinterlands-selector {
+	border-color: var(--hinterlands);
+}
+
+.dark-ages-selector {
+	border-color: var(--dark-ages);
+}
+
+.cornucopia-selector {
+	border-color: var(--cornucopia);
+}
+
+.guilds-selector {
+	border-color: var(--guilds);
+}
+
+.adventures-selector {
+	border-color: var(--adventures);
+}
+
+.empires-selector {
+	border-color: var(--empires);
+}
+
+.nocturne-selector {
+	border-color: var(--nocturne);
+}
+
+.renaissance-selector {
+	border-color: var(--renaissance);
+}
+
+.menagerie-selector {
+	border-color: var(--menagerie);
+}
+
+.promo-selector {
+	border-color: var(--promo);
 }

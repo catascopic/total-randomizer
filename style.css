@@ -55,8 +55,8 @@
 }
 
 .cost {
+	font-family: 'Fira Sans';	
 	background-image: url(coin.svg);
-	font-family: 'Fira Sans';
 	font-size: 14px;
 	color: black;
 	
@@ -85,8 +85,9 @@
 	font-size: 10px;
 	color: black;
 
-	text-align: center;
-	line-height: 14px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 :not(.selectable) {
@@ -94,6 +95,63 @@
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+.setup {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.separator {
+	background-color: black;
+	color: white;
+	font-family: 'Fira Sans';
+	font-size: 24px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	height: 40px;
+	padding: 4px;
+	margin: 20px;
+}
+
+.boxes {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.box {
+	width: 180px;
+	height: 180px;
+	display: flex;
+	flex-direction: column;
+	outline: 3px outset rgba(0, 0, 0, .4);
+	outline-offset: -3px;
+	cursor: pointer;
+}
+
+.box-name {
+	font-family: 'Nova Oval';
+	font-size: 20px;
+	text-align: center;
+	width: 100%;
+	height: 40px;
+	line-height: 42px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.selector:not(.selected) {
+	--p: 0.4;
+	filter: contrast(calc(var(--p) / (2 - var(--p)))) brightness(calc(2 - var(--p)));
+}
+
+.selector:not(.selected) img {
+	filter: grayscale(100%);
 }
 
 .hide {

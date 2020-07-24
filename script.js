@@ -4,7 +4,7 @@ var landscapeTypeLimits = {
 	Way: 1
 };
 
-var sets = {};
+var sets = {}
 var promos = {};
 
 var randomizerDeck;
@@ -32,14 +32,14 @@ function init(json) {
 
 function createRandomizerDeck() {
 	randomizerDeck = [];
-	randomizerDeck.push(...sets['Base']);
+	// randomizerDeck.push(...sets['Base']);
 	randomizerDeck.push(...sets['Intrigue']);
-	randomizerDeck.push(...sets['Prosperity']);
+	// randomizerDeck.push(...sets['Prosperity']);
 	randomizerDeck.push(...sets['Dark Ages']);
-	randomizerDeck.push(...sets['Cornucopia']);
-	randomizerDeck.push(...sets['Guilds']);
+	// randomizerDeck.push(...sets['Cornucopia']);
+	// randomizerDeck.push(...sets['Guilds']);
 	randomizerDeck.push(...sets['Adventures']);
-	randomizerDeck.push(...sets['Nocturne']);
+	// randomizerDeck.push(...sets['Nocturne']);
 	randomizerDeck.push(...sets['Renaissance']);
 	// randomizerDeck.push(...sets['Menagerie']);
 	
