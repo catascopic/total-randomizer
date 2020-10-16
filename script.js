@@ -46,6 +46,7 @@ function init(defaultPiles) {
 function setupNewState() {
 	for (let pile of piles) {
 		shuffle(pile.items);
+		pile.size = pile.items.length;
 		pile.used = [];
 	}
 }
@@ -55,6 +56,10 @@ function setupNewState() {
 var landscapeTotal;
 
 function generate() {
+	active.Prosperity = true;
+	active.Adventures = true;
+	active.Nocturne = true;
+	active.Renaissance = true;
 	active.Menagerie = true;
 	
 	chosenLandscapes = {};
@@ -71,7 +76,7 @@ function generate() {
 		let total = activePiles.reduce(reducer, 0);
 		let index = randInt(0, total);
 		for (let pile of activePiles) {
-			if (index < pile.items.length) {
+			if (index < pile.size) {
 				// we don't care removing the card at the actual index,
 				// because all piles are shuffled.
 				let item = getItem(pile);
@@ -83,7 +88,7 @@ function generate() {
 				}
 				continue kingdom;
 			}
-			index -= pile.items.length;			
+			index -= pile.size;			
 		}
 		throw 'unavailable';
 	}
@@ -108,7 +113,7 @@ function getItem(pile) {
 }
 
 function reducer(running, pile) {
-	return running + pile.items.length;
+	return running + pile.size;
 }
 
 function isActive(pile) {
