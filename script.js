@@ -4,50 +4,114 @@ var landscapeTypeLimits = {
 	Way: 1
 };
 
-var sets = {}
-var promos = {};
+var active = {};
+var piles;
 
-var randomizerDeck;
-
-var chosen;
-var used = [];
-
-var SETS = [
+const SETS = [
 	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
 	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
 	'Renaissance', 'Menagerie', 'Promo'
 ];
 
-var displayers = [];
+function init(defaultPiles) {
+	let rawState = localStorage.getItem('state');
 
-function init(json) {
-	for (let set of json.sets) {
-		sets[set.name] = set.cards;
+	let state;
+	if (rawState) {
+		try {
+			state = JSON.parse(rawState);
+			console.log('loaded last session from ' + state.date);
+		} catch (jsonException) {
+			console.log('failed to parse last session, resetting');
+		}
+	} else {
+		console.log('creating new session');
 	}
-	for (let promo of json.promos) {
-		promos[promo.name] = promo;
-	}
-	createRandomizerDeck();
-}
-
-function createRandomizerDeck() {
-	randomizerDeck = [];
-	// randomizerDeck.push(...sets['Base']);
-	randomizerDeck.push(...sets['Intrigue']);
-	// randomizerDeck.push(...sets['Prosperity']);
-	randomizerDeck.push(...sets['Dark Ages']);
-	// randomizerDeck.push(...sets['Cornucopia']);
-	// randomizerDeck.push(...sets['Guilds']);
-	randomizerDeck.push(...sets['Adventures']);
-	// randomizerDeck.push(...sets['Nocturne']);
-	randomizerDeck.push(...sets['Renaissance']);
-	// randomizerDeck.push(...sets['Menagerie']);
 	
-	randomizerDeck.push(promos['Black Market']);
-	randomizerDeck.push(promos['Governor']);
-	randomizerDeck.push(promos['Prince']);
-	shuffle(randomizerDeck);
+	if (!state) {
+		active = {'Base': true};
+		piles = defaultPiles;
+		setupNewState();
+		localStorage.setItem('state', JSON.stringify({
+			active: active,
+			piles: piles,
+			date: new Date().toString()
+		}));
+	} else {
+		active = state.active;
+		piles = state.piles;
+	}
 }
+
+function setupNewState() {
+	for (let pile of piles) {
+		shuffle(pile.items);
+		pile.used = [];
+	}
+}
+
+var chosenLandscapes;
+
+function generate() {
+	active.Nocturne = true;
+	
+	chosenLandscapes = {};
+	chosen = {};
+	for (let setName of SETS) {
+		chosen[setName] = [];
+	}
+	
+	let chosenCards = 0;
+	kingdom: while (chosenCards < KINGDOM_SIZE) {
+		let activePiles = piles.filter(isActive);
+		let total = activePiles.reduce(reducer, 0);
+		let index = randInt(0, total);
+		for (let pile of activePiles) {
+			if (index < pile.items.length) {
+				// we don't care removing the card at the actual index,
+				// because all piles are shuffled.
+				let item = pile.items.pop();
+				// pile.used.push(item);
+				chosen[item.set].push(item);
+				if (item.landscape) {
+					// TODO
+				} else {
+					chosenCards++;
+				}
+				continue kingdom;
+			}
+			index -= pile.items.length;			
+		}
+		// TODO: this should be unreachable
+		throw 'unavailable';
+	}
+	
+	for (let displayer of displayers) {
+		let cards = chosen[displayer.name];
+		cards.sort(cardComparator);
+		displayer.display(cards);
+	}
+}
+
+function reducer(running, pile) {
+	return running + pile.items.length;
+}
+
+function isActive(pile) {
+	if (!active[pile.set]) {
+		return false;
+	}
+	if (!pile.landscape) {
+		return true;
+	}
+	return true;
+}
+
+function resetState() {
+	localStorage.removeItem('state');
+}
+
+var displayers = [];
 
 window.onload = function() {
 	let kingdom = document.getElementById('kingdom');
@@ -59,48 +123,6 @@ window.onload = function() {
 	}
 	generate();
 };
-
-function generate() {
-	
-	chosen = {};
-	for (let setName of SETS) {
-		chosen[setName] = [];
-	}
-	
-	let skipped = [];
-	let cardCount = 0;
-	let landscapeCount = 0;
-	let landscapeTypeCounts = {};
-
-	while (cardCount < KINGDOM_SIZE) {
-		let rand = randomizerDeck.pop();
-		if (rand.landscape) {
-			if (landscapeCount >= landscapeLimit || !checkLandscapeTypeLimit(landscapeTypeCounts, rand)) {
-				skipped.push(rand);
-				continue;
-			}
-			landscapeTypeCounts[rand.landscape] = (landscapeTypeCounts[rand.landscape] || 0) + 1;
-			landscapeCount++;
-		} else {
-			cardCount++;
-		}
-		chosen[rand.set].push(rand);
-		used.push(rand);
-	}
-	
-	shuffleInto(skipped, randomizerDeck);
-	
-	for (let displayer of displayers) {
-		let cards = chosen[displayer.name];
-		cards.sort(cardComparator);
-		displayer.display(cards);
-	}
-}
-
-function checkLandscapeTypeLimit(landscapeTypeCounts, rand) {
-	let typeLimit = landscapeTypeLimits[rand.landscape];
-	return typeLimit == undefined || (landscapeTypeCounts[rand.landscape] || 0) < typeLimit;
-}
 
 function cardComparator(c1, c2) {
 	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));

@@ -57,6 +57,44 @@ function createSet(setName, container) {
 	};
 }
 
+function createSetSelector(setName) {
+	const setNode = document.createElement('div');
+	setNode.classList.add(setName, 'selector');
+	
+	const check = document.createElement('div');
+	check.classList.add('check');
+	const img = document.createElement('img');
+	img.src = 'check.svg'
+	check.appendChild(img);
+	setNode.appendChild(check);
+	
+	const name = document.createElement('div');
+	name.classList.add('selector-name');
+	name.innerText = setName;
+	setNode.appendChild(name);
+	
+	return setNode;
+}
+
+function createPromoSelector(promoName) {
+	const setNode = document.createElement('div');
+	setNode.classList.add('setName', 'selector');
+	
+	const check = document.createElement('div');
+	check.classList.add('check');
+	const img = document.createElement('img');
+	img.src = 'check.svg'
+	check.appendChild(img);
+	setNode.appendChild(check);
+	
+	const name = document.createElement('div');
+	name.classList.add('selector-name');
+	name.innerText = promoName;
+	setNode.appendChild(name);
+	
+	return setNode;
+}
+
 function getImageFileName(cardName) {
 	return cardName.toLowerCase().replaceAll(/[ \-\/]+/g, '_').replaceAll(/[^a-z_]+/g, '');
 }

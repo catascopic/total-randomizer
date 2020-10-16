@@ -16,72 +16,72 @@
 	--promo: black;
 }
 
-.base {
+.Base, .base {
 	background-color: var(--base);
 	color: black;
 }
 
-.intrigue {
+.Intrigue, .intrigue {
 	background-color: var(--intrigue);
 	color: black;
 }
 
-.seaside {
+.Seaside, .seaside {
 	background-color: var(--seaside);
 	color: white;
 }
 
-.alchemy {
+.Alchemy, .alchemy {
 	background-color: var(--alchemy);
 	color: white;
 }
 
-.prosperity {
+.Prosperity, .prosperity {
 	background-color: var(--prosperity);
 	color: black;
 }
 
-.hinterlands {
+.Hinterlands, .hinterlands {
 	background-color: var(--hinterlands);
 	color: black;
 }
 
-.dark-ages {
+.Dark-Ages, .dark-ages {
 	background-color: var(--dark-ages);
 	color: white;
 }
 
-.cornucopia {
+.Cornucopia, .cornucopia {
 	background-color: var(--cornucopia);
 	color: black;
 }
 
-.guilds {
+.Guilds, .guilds {
 	background-color: var(--guilds);
 	color: black;
 }
 
-.adventures {
+.Adventures, .adventures {
 	background-color: var(--adventures);
 	color: white;
 }
 
-.empires {
+.Empires, .empires {
 	background-color: var(--empires);
 	color: black;
 }
 
-.nocturne {
+.Nocturne, .nocturne {
 	background-color: var(--nocturne);
 	color: white;
 }
 
-.renaissance {
+.Renaissance, .renaissance {
 	background-color: var(--renaissance);
 	color: black;
 }
 
-.menagerie {
+.Menagerie, .menagerie {
 	background-color: var(--menagerie);
 	color: black;
 }
@@ -89,66 +89,4 @@
 .promo {
 	background-color: var(--promo);
 	color: white;
-}
-
-/* SELECTORS */
-
-.base-selector {
-	border-color: var(--base);
-}
-
-.intrigue-selector {
-	border-color: var(--intrigue);
-}
-
-.seaside-selector {
-	border-color: var(--seaside);
-}
-
-.alchemy-selector {
-	border-color: var(--alchemy);
-}
-
-.prosperity-selector {
-	border-color: var(--prosperity);
-}
-
-.hinterlands-selector {
-	border-color: var(--hinterlands);
-}
-
-.dark-ages-selector {
-	border-color: var(--dark-ages);
-}
-
-.cornucopia-selector {
-	border-color: var(--cornucopia);
-}
-
-.guilds-selector {
-	border-color: var(--guilds);
-}
-
-.adventures-selector {
-	border-color: var(--adventures);
-}
-
-.empires-selector {
-	border-color: var(--empires);
-}
-
-.nocturne-selector {
-	border-color: var(--nocturne);
-}
-
-.renaissance-selector {
-	border-color: var(--renaissance);
-}
-
-.menagerie-selector {
-	border-color: var(--menagerie);
-}
-
-.promo-selector {
-	border-color: var(--promo);
 }
