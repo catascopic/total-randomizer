@@ -50,10 +50,12 @@ function setupNewState() {
 	}
 }
 
-var chosenLandscapes;
+// TODO: try to make these not global
+// var landscapeTypeTotals;
+var landscapeTotal;
 
 function generate() {
-	active.Nocturne = true;
+	active.Menagerie = true;
 	
 	chosenLandscapes = {};
 	chosen = {};
@@ -61,6 +63,8 @@ function generate() {
 		chosen[setName] = [];
 	}
 	
+	// landscapeTypeTotals = {};
+	landscapeTotal = 0;
 	let chosenCards = 0;
 	kingdom: while (chosenCards < KINGDOM_SIZE) {
 		let activePiles = piles.filter(isActive);
@@ -70,11 +74,10 @@ function generate() {
 			if (index < pile.items.length) {
 				// we don't care removing the card at the actual index,
 				// because all piles are shuffled.
-				let item = pile.items.pop();
-				// pile.used.push(item);
+				let item = getItem(pile);
 				chosen[item.set].push(item);
 				if (item.landscape) {
-					// TODO
+					landscapeTotal++;
 				} else {
 					chosenCards++;
 				}
@@ -82,7 +85,6 @@ function generate() {
 			}
 			index -= pile.items.length;			
 		}
-		// TODO: this should be unreachable
 		throw 'unavailable';
 	}
 	
@@ -91,6 +93,18 @@ function generate() {
 		cards.sort(cardComparator);
 		displayer.display(cards);
 	}
+}
+
+function getItem(pile) {
+	let item = pile.items.pop();
+	pile.used.push(item);
+	if (pile.items.length == 0) {
+		pile.items = pile.used;
+		shuffle(pile.items);
+		pile.used = [];
+		console.log('recycling ' + pile.set + ' ' + (pile.landscape || 'Card'));
+	}
+	return item;
 }
 
 function reducer(running, pile) {
@@ -104,7 +118,20 @@ function isActive(pile) {
 	if (!pile.landscape) {
 		return true;
 	}
-	return true;
+	return landscapeTotal < landscapeLimit;
+}
+
+function updateCounter(obj, key, delta) {
+	obj[key] = (obj[key] || 0) + delta;
+}
+
+function updateArray(obj, key, item) {
+	let val = obj[key];
+	if (!val) {
+		obj[key] = [item];
+	} else {
+		val.push(item);
+	}
 }
 
 function resetState() {
