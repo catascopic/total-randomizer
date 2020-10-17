@@ -10,9 +10,9 @@ function createTile(card, container) {
 	}
 	
 	const nameNode = document.createElement('a');
+	nameNode.innerText = card.name;
 	nameNode.className = 'name';
 	nameNode.target = '_blank';
-	nameNode.innerText = card.name;
 	nameNode.href = 'http://wiki.dominionstrategy.com/index.php/' + card.name.replaceAll(' ', '_');
 	tileNode.append(nameNode);
 	
@@ -36,7 +36,7 @@ function createSet(setName, container) {
 	setNode.classList.add('set', 'hide');
 	
 	const headerNode = document.createElement('div');
-	headerNode.classList.add('set-header', setName.toLowerCase().replaceAll(' ', '-'));
+	headerNode.classList.add('set-header', setName.replaceAll(' ', '-'));
 	headerNode.innerText = setName;
 	setNode.append(headerNode);
 	
@@ -45,16 +45,37 @@ function createSet(setName, container) {
 	setNode.append(cardsNode);
 	
 	container.append(setNode);
+	
+	let cards;
 
-	return function(cards) {
-		setNode.classList.toggle('hide', !cards.length);
-		while (cardsNode.firstChild) {
-			cardsNode.lastChild.remove();
-		}
-		for (let card of cards) {
-			createTile(card, cardsNode);
+	return {
+		reset: function() {
+			cards = [];
+		},
+		
+		update: function(card) {
+			cards.push(card);
+		},
+		
+		display: function() {
+			setNode.classList.toggle('hide', !cards.length);
+			while (cardsNode.firstChild) {
+				cardsNode.lastChild.remove();
+			}
+			cards.sort(cardComparatorForBox);
+			for (let card of cards) {
+				createTile(card, cardsNode);
+			}
 		}
 	};
+}
+
+function cardComparatorForBox(c1, c2) {
+	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));
+	if (landscapeCmp != 0) {
+		return landscapeCmp;
+	}
+	return c1.name.localeCompare(c2.name);
 }
 
 function createSetSelector(setName) {

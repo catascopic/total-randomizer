@@ -31,19 +31,15 @@ function init(defaultPiles) {
 	if (!state) {
 		active = {'Base': true};
 		piles = defaultPiles;
-		setupNewState();
-		localStorage.setItem('state', JSON.stringify({
-			active: active,
-			piles: piles,
-			date: new Date().toString()
-		}));
+		initializeNewState();
+		saveState();
 	} else {
 		active = state.active;
 		piles = state.piles;
 	}
 }
 
-function setupNewState() {
+function initializeNewState() {
 	for (let pile of piles) {
 		shuffle(pile.items);
 		pile.size = pile.items.length;
@@ -51,24 +47,12 @@ function setupNewState() {
 	}
 }
 
-// TODO: try to make these not global
 // var landscapeTypeTotals;
 var landscapeTotal;
 
 function generate() {
-	active.Prosperity = true;
-	active.Adventures = true;
-	active.Nocturne = true;
-	active.Renaissance = true;
-	active.Menagerie = true;
+	resetDisplay();
 	
-	chosenLandscapes = {};
-	chosen = {};
-	for (let setName of SETS) {
-		chosen[setName] = [];
-	}
-	
-	// landscapeTypeTotals = {};
 	landscapeTotal = 0;
 	let chosenCards = 0;
 	kingdom: while (chosenCards < KINGDOM_SIZE) {
@@ -77,10 +61,8 @@ function generate() {
 		let index = randInt(0, total);
 		for (let pile of activePiles) {
 			if (index < pile.size) {
-				// we don't care removing the card at the actual index,
-				// because all piles are shuffled.
 				let item = getItem(pile);
-				chosen[item.set].push(item);
+				updateDisplay(item);
 				if (item.landscape) {
 					landscapeTotal++;
 				} else {
@@ -93,21 +75,21 @@ function generate() {
 		throw 'unavailable';
 	}
 	
-	for (let displayer of displayers) {
-		let cards = chosen[displayer.name];
-		cards.sort(cardComparator);
-		displayer.display(cards);
-	}
+	saveState();	
+	finishDisplay();
 }
 
 function getItem(pile) {
+	// we don't care removing the card at the actual index,
+	// because all piles are shuffled.
 	let item = pile.items.pop();
 	pile.used.push(item);
+	// console.log(`chose ${item.name} from ${pile.set} ${(pile.landscape || 'Card')}, ${pile.items.length}/${pile.size}`);
 	if (pile.items.length == 0) {
 		pile.items = pile.used;
 		shuffle(pile.items);
 		pile.used = [];
-		console.log('recycling ' + pile.set + ' ' + (pile.landscape || 'Card'));
+		// console.log(`recycling ${pile.set} ${(pile.landscape || 'Card')}`);
 	}
 	return item;
 }
@@ -126,49 +108,66 @@ function isActive(pile) {
 	return landscapeTotal < landscapeLimit;
 }
 
-function updateCounter(obj, key, delta) {
-	obj[key] = (obj[key] || 0) + delta;
-}
-
-function updateArray(obj, key, item) {
-	let val = obj[key];
-	if (!val) {
-		obj[key] = [item];
-	} else {
-		val.push(item);
-	}
-}
-
 function resetState() {
 	localStorage.removeItem('state');
 }
 
-var displayers = [];
+function saveState() {
+	localStorage.setItem('state', JSON.stringify({
+		active: active,
+		piles: piles,
+		date: new Date().toString()
+	}));
+}
+
+var displayers = {};
+var configuration;
 
 window.onload = function() {
 	let kingdom = document.getElementById('kingdom');
 	for (let setName of SETS) {
-		displayers.push({
-			display: createSet(setName, kingdom),
-			name: setName
-		});
+		displayers[setName] = createSet(setName, kingdom);
 	}
 	generate();
 };
+
+function resetDisplay() {
+	configuration = [];
+	for (let displayer of Object.values(displayers)) {
+		displayer.reset();
+	}
+}
+
+function updateDisplay(card) {
+	configuration.push(card);
+	displayers[card.set].update(card);
+}
+
+function finishDisplay(card) {
+	configuration.sort(cardComparator);
+	console.log(configuration.map(x => x.name).join('\n'));
+	for (let displayer of Object.values(displayers)) {
+		displayer.display();
+	}
+}
 
 function cardComparator(c1, c2) {
 	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));
 	if (landscapeCmp != 0) {
 		return landscapeCmp;
 	}
+	let costCmp = (c1.coins || 0) - (c2.coins || 0);
+	if (costCmp != 0) {
+		return costCmp;
+	}
 	return c1.name.localeCompare(c2.name);
 }
 
-function shuffleInto(cards, deck) {
-	for (let card of cards) {
-		deck.push(card);
-		swap(deck, deck.length - 1, randInt(0, deck.length));
-	}
+function randomInsert(pile, thing) {
+	let index = randInt(0, pile.length + 1);
+	// if index == length, we push undefined here, which is fine
+	pile.push(pile[index]);
+	pile[index] = thing;
 }
 
 function shuffle(array) {
