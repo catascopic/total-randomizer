@@ -7,6 +7,9 @@ var landscapeTypeLimits = {
 var active = {};
 var piles;
 
+var setupHistory;
+var currentSetup;
+
 const SETS = [
 	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
 	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
@@ -20,7 +23,7 @@ function init(defaultPiles) {
 	if (rawState) {
 		try {
 			state = JSON.parse(rawState);
-			console.log('loaded last session from ' + state.date);
+			console.log('loaded last session');
 		} catch (jsonException) {
 			console.log('failed to parse last session, resetting');
 		}
@@ -36,6 +39,7 @@ function init(defaultPiles) {
 	} else {
 		active = state.active;
 		piles = state.piles;
+		setupHistory = state.history;
 	}
 }
 
@@ -55,9 +59,9 @@ function generate() {
 	
 	landscapeTotal = 0;
 	let chosenCards = 0;
-	kingdom: while (chosenCards < KINGDOM_SIZE) {
+	while (chosenCards < KINGDOM_SIZE) {
 		let activePiles = piles.filter(isActive);
-		let total = activePiles.reduce(reducer, 0);
+		let total = activePiles.reduce((running, pile) => running + pile.size, 0);
 		let index = randInt(0, total);
 		for (let pile of activePiles) {
 			if (index < pile.size) {
@@ -68,15 +72,14 @@ function generate() {
 				} else {
 					chosenCards++;
 				}
-				continue kingdom;
+				break;
 			}
 			index -= pile.size;			
 		}
-		throw 'unavailable';
 	}
-	
-	saveState();	
+		
 	finishDisplay();
+	saveState();
 }
 
 function getItem(pile) {
@@ -92,10 +95,6 @@ function getItem(pile) {
 		// console.log(`recycling ${pile.set} ${(pile.landscape || 'Card')}`);
 	}
 	return item;
-}
-
-function reducer(running, pile) {
-	return running + pile.size;
 }
 
 function isActive(pile) {
@@ -116,36 +115,38 @@ function saveState() {
 	localStorage.setItem('state', JSON.stringify({
 		active: active,
 		piles: piles,
-		date: new Date().toString()
+		history: setupHistory
 	}));
 }
 
 var displayers = {};
-var configuration;
 
 window.onload = function() {
 	let kingdom = document.getElementById('kingdom');
 	for (let setName of SETS) {
 		displayers[setName] = createSet(setName, kingdom);
 	}
-	generate();
 };
 
 function resetDisplay() {
-	configuration = [];
+	currentSetup = [];
 	for (let displayer of Object.values(displayers)) {
 		displayer.reset();
 	}
 }
 
 function updateDisplay(card) {
-	configuration.push(card);
+	currentSetup.push(card);
 	displayers[card.set].update(card);
 }
 
 function finishDisplay(card) {
-	configuration.sort(cardComparator);
-	console.log(configuration.map(x => x.name).join('\n'));
+	currentSetup.sort(cardComparator);
+	setupHistory.push({
+		setup: currentSetup,
+		date: new Date().toString()
+	});
+	console.log(currentSetup.map(x => x.name).join('\n'));
 	for (let displayer of Object.values(displayers)) {
 		displayer.display();
 	}
