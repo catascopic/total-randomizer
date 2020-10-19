@@ -4,19 +4,17 @@ var landscapeTypeLimits = {
 	Way: 1
 };
 
+var dominion;
+
 var active = {};
 var piles;
 
 var setupHistory;
 var currentSetup;
 
-const SETS = [
-	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
-	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
-	'Renaissance', 'Menagerie', 'Promo'
-];
-
-function init(defaultPiles) {
+function init(initDominion) {
+	dominion = initDominion;
+	
 	let rawState = localStorage.getItem('state');
 
 	let state;
@@ -33,8 +31,8 @@ function init(defaultPiles) {
 	
 	if (!state) {
 		active = {'Base': true};
-		piles = defaultPiles;
-		initializeNewState();
+		piles = newState();
+		setupHistory = [];
 		saveState();
 	} else {
 		active = state.active;
@@ -43,12 +41,57 @@ function init(defaultPiles) {
 	}
 }
 
-function initializeNewState() {
-	for (let pile of piles) {
-		shuffle(pile.items);
-		pile.size = pile.items.length;
-		pile.used = [];
+function newState() {
+	piles = [];
+	sets = {};
+	
+	for (let card of Object.values(dominion)) {
+		if (card.set = 'Promo') {
+			piles.push(newPromo(card));
+		} else {
+		
+		}
 	}
+}
+
+function newExpansion(expansion, lastIndex = -1) {
+	let cards = expansion.cards;
+	let index = lastIndex;
+	return {
+		size: cards.length,
+		isActive: function() {
+			return isActive(expansion);
+		},
+		get: function() {
+			index = (index + 1) % cards.length;
+			if (!index) {
+				shuffle(cards);
+			}
+			return cards[index];
+		}
+	};
+}
+
+function newPromo(promo) {
+	return {
+		size: 1,
+		isActive: function() {
+			return isActive(promo);
+		},
+		get: function() {
+			return promo;
+		}
+	};
+}
+
+function isActive(release) {
+	if (!active[release.name]) {
+		return false;
+	}
+	if (!release.landscape) {
+		return true;
+	}
+	return landscapeTotal < landscapeLimit;
 }
 
 // var landscapeTypeTotals;
@@ -82,31 +125,6 @@ function generate() {
 	saveState();
 }
 
-function getItem(pile) {
-	// we don't care removing the card at the actual index,
-	// because all piles are shuffled.
-	let item = pile.items.pop();
-	pile.used.push(item);
-	// console.log(`chose ${item.name} from ${pile.set} ${(pile.landscape || 'Card')}, ${pile.items.length}/${pile.size}`);
-	if (pile.items.length == 0) {
-		pile.items = pile.used;
-		shuffle(pile.items);
-		pile.used = [];
-		// console.log(`recycling ${pile.set} ${(pile.landscape || 'Card')}`);
-	}
-	return item;
-}
-
-function isActive(pile) {
-	if (!active[pile.set]) {
-		return false;
-	}
-	if (!pile.landscape) {
-		return true;
-	}
-	return landscapeTotal < landscapeLimit;
-}
-
 function resetState() {
 	localStorage.removeItem('state');
 }
@@ -120,6 +138,11 @@ function saveState() {
 }
 
 var displayers = {};
+const SETS = [
+	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
+	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
+	'Renaissance', 'Menagerie', 'Promo'
+];
 
 window.onload = function() {
 	let kingdom = document.getElementById('kingdom');
