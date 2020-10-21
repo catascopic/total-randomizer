@@ -16,7 +16,7 @@ function loadCards(json) {
 	dominion = json;
 }
 
-function setupState(initialPiles) {
+function setupPiles(initialPiles) {
 	
 	let rawState = localStorage.getItem('state');
 	let state;
@@ -38,7 +38,7 @@ function setupState(initialPiles) {
 		saveState();
 	} else {
 		active = state.active;
-		piles = loadPiles(state.piles);
+		// piles = loadPiles(state.piles);
 		setupHistory = state.history;
 	}
 }
