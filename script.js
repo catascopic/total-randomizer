@@ -43,7 +43,25 @@ function setupPiles(initialPiles) {
 	}
 }
 
+function randomLandscapeCount(cards, landscapes, n) {
+	let r = Math.random();
+	for (let i = 0; i < n; i++) {
+		let p = landscapeProb(cards, landscapes, i)
+		if (r < p) {
+			return i;
+		}
+		r -= p;
+	}
+	return n;
+}
 
+function landscapeProb(cards, landscapes, n) {
+	let deck = cards + landscapes;
+	return (factorialRange(landscapes, landscapes - n)
+			* factorialRange(cards, cards - KINGDOM_SIZE)
+			* combinations(KINGDOM_SIZE + n - 1, n))
+					/ factorialRange(deck, deck - KINGDOM_SIZE - n);
+}
 
 function push(obj, key, item) {
 	let array = obj[key];
