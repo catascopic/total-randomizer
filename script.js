@@ -66,16 +66,16 @@ function landscapeProb(cards, landscapes, n) {
 function push(obj, key, item) {
 	let array = obj[key];
 	if (!array) {
-		array = [];
-		obj[key] = array;
+		obj[key] = [item];
+	} else {
+		array.push(item);
 	}
-	array.push(item);
 }
 
 function createPile(_cards, _used) {
 
 	let cards = _cards;
-	let used = _used;
+	let used = _used;t
 	let current = [];
 	let recycle = 0;
 	let size = cards.length;
@@ -236,7 +236,7 @@ function finishDisplay(card) {
 }
 
 function compareCard(c1, c2) {
-	let landscapeSign = compareTruthy(c1.landscape, c2.landscape);
+	let landscapeSign = landscapeIndex(c1) - landscapeIndex(c2);
 	if (landscapeSign != 0) {
 		return landscapeSign;
 	}
@@ -244,11 +244,25 @@ function compareCard(c1, c2) {
 	if (coinsSign != 0) {
 		return coinsSign;
 	}
+	let debtSign = (c1.debt || 0) - (c2.debt || 0);
+	if (debtSign != 0) {
+		return debtSign;
+	}
+	let potionSign = compareTruthy(c1.potion, c2.potion);
+	if (potionSign != 0) {
+		return potionSign;
+	}
 	return c1.name.localeCompare(c2.name);
 }
 
 function compareTruthy(t1, t2) {
 	return Number(Boolean(t1)) - Number(Boolean(t2));
+}
+
+const LANDSCAPE_ORDER = {Event: 1, Project: 2, Way: 3, Landmark: 4};
+
+function landscapeIndex(card) {
+	return LANDSCAPE_ORDER[card.landscape] || 0;
 }
 
 // assumes the array is already shuffled

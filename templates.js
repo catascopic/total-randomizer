@@ -62,7 +62,7 @@ function createSet(setName, container) {
 			while (cardsNode.firstChild) {
 				cardsNode.lastChild.remove();
 			}
-			cards.sort(cardComparatorForBox);
+			cards.sort(compareCardForBox);
 			for (let card of cards) {
 				createTile(card, cardsNode);
 			}
@@ -70,10 +70,10 @@ function createSet(setName, container) {
 	};
 }
 
-function cardComparatorForBox(c1, c2) {
-	let landscapeCmp = Number(Boolean(c1.landscape)) - Number(Boolean(c2.landscape));
-	if (landscapeCmp != 0) {
-		return landscapeCmp;
+function compareCardForBox(c1, c2) {
+	let landscapeSign = landscapeIndex(c1) - landscapeIndex(c2);
+	if (landscapeSign != 0) {
+		return landscapeSign;
 	}
 	return c1.name.localeCompare(c2.name);
 }
