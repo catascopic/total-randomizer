@@ -7,7 +7,7 @@ var landscapeTypeLimits = {
 var dominion;
 
 var active = {};
-var piles;
+var piles = [];
 
 var setupHistory;
 var currentSetup;
@@ -33,14 +33,116 @@ function setupPiles(initialPiles) {
 	
 	if (!state) {
 		active = {'Base': true};
-		piles = newPiles(initialPiles);
+		newPiles(initialPiles);
 		setupHistory = [];
 		saveState();
 	} else {
 		active = state.active;
-		// piles = loadPiles(state.piles);
+		console.log(state.piles);
+		piles = loadPiles(state.piles);
 		setupHistory = state.history;
 	}
+}
+
+function newPiles(initialPiles) {
+	for (let pile of initialPiles) {
+		piles.push({
+			name: pile.name,
+			landscape: pile.landscape,
+			count: 0,
+			rate: 0,
+			picked: 0,
+			generator: pile.cards
+				? createPile(pile.cards, [])
+				: createSingleCardPile(pile.name)
+		});
+	}
+}
+
+function loadPiles(pileState) {
+	for (let pile of pileStates) {
+		piles.push({
+			name: pile.name,
+			landscape: pile.landscape,
+			count: pile.count,
+			rate: pile.rate,
+			picked: pile.picked,
+			generator: pile.cards
+				? createPile(pile.cards, pile.used)
+				: createSingleCardPile(pile.name)
+		});
+	}
+}
+
+function updateAverage(average, size, value) {
+    return (size * average + value) / (size + 1);
+}
+
+var weights = [1, 12, 26, 26, 35];
+
+var slots = [];
+let q = 0;
+for (let w of weights) {
+	slots.push({
+		count: 0,
+		picked: 0,
+		rate: 0,
+		weight: w,
+		name: q++
+	});
+}
+
+for (let i = 0; i < 100; i++) {
+	for (let slot of slots) {
+		slot.rate = updateAverage(slot.rate, slot.count, slot.weight / 100);
+		slot.count++;
+	}
+	
+	let p = randInt(0, 100);
+	
+	let chosen;
+	if (i % 10 != 10) {
+		for (let slot of slots) {
+			if (p < slot.weight) {
+				chosen = slot;
+				break;
+			}
+			p -= slot.weight;
+		}
+	} else {
+		disp();
+		chosen = slots[0];
+		let dMin = (chosen.picked / chosen.count - chosen.rate) / chosen.rate;
+		for (let i = 1; i < slots.length; i++) {
+			let slot = slots[i];
+			let d = (slot.picked / slot.count - slot.rate) / slot.rate;
+			if (d < dMin) {
+				chosen = slot;
+				dMin = d;
+			}
+		}
+		console.log(chosen.name);
+	}
+	chosen.picked++;
+}
+
+function unfair(slot) {
+	return slot.rate * slot.count >= 1;
+}
+
+function round(x) {
+	return Math.round(x * 10000) / 100;
+}
+
+function disp() {
+	for (let slot of slots) {
+		let actual = slot.picked / slot.count;
+		console.log(`expected=${round(slot.rate)}, actual=${round(actual)}, d=${(actual - slot.rate) / slot.rate}`);
+	}
+}
+
+function sum(array) {
+	return array.reduce((a, b) => a + b, 0);
 }
 
 function randomLandscapeCount(cards, landscapes, n) {
@@ -75,7 +177,7 @@ function push(obj, key, item) {
 function createPile(_cards, _used) {
 
 	let cards = _cards;
-	let used = _used;t
+	let used = _used;
 	let current = [];
 	let recycle = 0;
 	let size = cards.length;
