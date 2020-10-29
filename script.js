@@ -65,57 +65,6 @@ function loadGenerators() {
 	}
 }
 
-var weights = [1, 12, 26, 26, 35];
-
-var slots = [];
-let q = 0;
-for (let w of weights) {
-	slots.push({
-		count: 0,
-		chosen: 0,
-		rate: 0,
-		weight: w,
-		name: q++
-	});
-}
-
-for (let i = 0; i < 100; i++) {
-	for (let slot of slots) {
-		slot.rate = updateAverage(slot.rate, slot.count, slot.weight / 100);
-		slot.count++;
-	}
-	
-	let p = randInt(0, 100);
-	
-	let chosen;
-	if (i % 10 != 10) {
-		for (let slot of slots) {
-			if (p < slot.weight) {
-				chosen = slot;
-				break;
-			}
-			p -= slot.weight;
-		}
-	} else {
-		disp();
-		chosen = slots[0];
-		let dMin = (chosen.chosen / chosen.count - chosen.rate) / chosen.rate;
-		for (let i = 1; i < slots.length; i++) {
-			let slot = slots[i];
-			let d = (slot.chosen / slot.count - slot.rate) / slot.rate;
-			if (d < dMin) {
-				chosen = slot;
-				dMin = d;
-			}
-		}
-	}
-	chosen.chosen++;
-}
-
-function round(x) {
-	return Math.round(x * 10000) / 100;
-}
-
 function logStats() {
 	for (let pile of piles) {
 		if (pile.count) {
@@ -125,8 +74,8 @@ function logStats() {
 	}
 }
 
-function sum(array) {
-	return array.reduce((a, b) => a + b, 0);
+function round(x) {
+	return Math.round(x * 10000) / 100;
 }
 
 function setupGenerator(pile) {
