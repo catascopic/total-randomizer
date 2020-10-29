@@ -86,7 +86,7 @@
 	color: black;
 }
 
-.promo {
+.Promo, .promo {
 	background-color: var(--promo);
 	color: white;
 }

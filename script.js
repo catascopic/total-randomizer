@@ -16,7 +16,7 @@ function loadCards(json) {
 	dominion = json;
 }
 
-function setupPiles(initialPiles) {
+function setupPiles(startingPiles) {
 	
 	let rawState = localStorage.getItem('state');
 	let state;
@@ -33,49 +33,36 @@ function setupPiles(initialPiles) {
 	
 	if (!state) {
 		active = {'Base': true};
-		newPiles(initialPiles);
+		piles = startingPiles;
+		initializePiles();
 		setupHistory = [];
 		saveState();
 	} else {
 		active = state.active;
-		console.log(state.piles);
-		piles = loadPiles(state.piles);
-		setupHistory = state.history;
+		piles = state.piles
+		setupHistory = state.setups;
+	}
+	loadGenerators();
+}
+
+function initializePiles() {
+	for (let pile of piles) {
+		if (pile.cards) {
+			shuffle(pile.cards);
+		}
+		pile.used = [];
+		pile.count = 0;
+		pile.rate = 0;
+		pile.chosen = 0;
 	}
 }
 
-function newPiles(initialPiles) {
-	for (let pile of initialPiles) {
-		piles.push({
-			name: pile.name,
-			landscape: pile.landscape,
-			count: 0,
-			rate: 0,
-			picked: 0,
-			generator: pile.cards
-				? createPile(pile.cards, [])
-				: createSingleCardPile(pile.name)
-		});
+function loadGenerators() {
+	for (let pile of piles) {
+		pile.generator = pile.cards
+			? setupGenerator(pile)
+			: setupSingleCardGenerator(pile);
 	}
-}
-
-function loadPiles(pileState) {
-	for (let pile of pileStates) {
-		piles.push({
-			name: pile.name,
-			landscape: pile.landscape,
-			count: pile.count,
-			rate: pile.rate,
-			picked: pile.picked,
-			generator: pile.cards
-				? createPile(pile.cards, pile.used)
-				: createSingleCardPile(pile.name)
-		});
-	}
-}
-
-function updateAverage(average, size, value) {
-    return (size * average + value) / (size + 1);
 }
 
 var weights = [1, 12, 26, 26, 35];
@@ -85,7 +72,7 @@ let q = 0;
 for (let w of weights) {
 	slots.push({
 		count: 0,
-		picked: 0,
+		chosen: 0,
 		rate: 0,
 		weight: w,
 		name: q++
@@ -112,32 +99,29 @@ for (let i = 0; i < 100; i++) {
 	} else {
 		disp();
 		chosen = slots[0];
-		let dMin = (chosen.picked / chosen.count - chosen.rate) / chosen.rate;
+		let dMin = (chosen.chosen / chosen.count - chosen.rate) / chosen.rate;
 		for (let i = 1; i < slots.length; i++) {
 			let slot = slots[i];
-			let d = (slot.picked / slot.count - slot.rate) / slot.rate;
+			let d = (slot.chosen / slot.count - slot.rate) / slot.rate;
 			if (d < dMin) {
 				chosen = slot;
 				dMin = d;
 			}
 		}
-		console.log(chosen.name);
 	}
-	chosen.picked++;
-}
-
-function unfair(slot) {
-	return slot.rate * slot.count >= 1;
+	chosen.chosen++;
 }
 
 function round(x) {
 	return Math.round(x * 10000) / 100;
 }
 
-function disp() {
-	for (let slot of slots) {
-		let actual = slot.picked / slot.count;
-		console.log(`expected=${round(slot.rate)}, actual=${round(actual)}, d=${(actual - slot.rate) / slot.rate}`);
+function logStats() {
+	for (let pile of piles) {
+		if (pile.count) {
+			let actual = pile.chosen / pile.count;
+			console.log(`${pile.name.padStart(12)}: expected=${round(pile.rate).toString().padStart(5)}, actual=${round(actual).toString().padStart(5)}, d=${(actual - pile.rate) / pile.rate}`);
+		}
 	}
 }
 
@@ -145,108 +129,111 @@ function sum(array) {
 	return array.reduce((a, b) => a + b, 0);
 }
 
-function randomLandscapeCount(cards, landscapes, n) {
-	let r = Math.random();
-	for (let i = 0; i < n; i++) {
-		let p = landscapeProb(cards, landscapes, i)
-		if (r < p) {
-			return i;
-		}
-		r -= p;
-	}
-	return n;
-}
+function setupGenerator(pile) {
 
-function landscapeProb(cards, landscapes, n) {
-	let deck = cards + landscapes;
-	return (factorialRange(landscapes, landscapes - n)
-			* factorialRange(cards, cards - KINGDOM_SIZE)
-			* combinations(KINGDOM_SIZE + n - 1, n))
-					/ factorialRange(deck, deck - KINGDOM_SIZE - n);
-}
-
-function push(obj, key, item) {
-	let array = obj[key];
-	if (!array) {
-		obj[key] = [item];
-	} else {
-		array.push(item);
-	}
-}
-
-function createPile(_cards, _used) {
-
-	let cards = _cards;
-	let used = _used;
+	let size = pile.cards.length + pile.used.length;
 	let current = [];
 	let recycle = 0;
-	let size = cards.length;
 
-	return {
-		size: function() {
-			return size - current.length;
-		},
-		draw: function() {
-			if (!cards.length) {
-				cards = used;
-				used = [];
-				shuffle(cards);
-				// the current cards missed the shuffle, so mark their position so we can shuffle them back in
-				recycle = current.length;
-			}
-			let card = cards.pop();
-			current.push(card);
-			return card;
-		},
-		finish: function() {
-			let i;
-			for (i = 0; i < recycle; i++) {
-				randomInsert(cards, current[i]);
-			}
-			for (; i < current.length; i++) {
-				used.push(current[i]);
-			}
-			current = [];
-			recycle = 0;
+	pile.size = function() {
+		return size - current.length;
+	};
+		
+	pile.draw = function() {
+		// guard against overdrawing
+		if (current.length == size) {
+			throw pile;
 		}
+		if (!pile.cards.length) {
+			pile.cards = pile.used;
+			pile.used = [];
+			shuffle(pile.cards);
+			// the current cards missed the shuffle, so mark their position so we can shuffle them back in
+			recycle = current.length;
+		}
+		let card = pile.cards.pop();
+		current.push(card);
+		return card;
+	};
+	
+	pile.finish = function() {
+		let i = 0;
+		for (; i < recycle; i++) {
+			randomInsert(pile.cards, current[i]);
+		}
+		for (; i < current.length; i++) {
+			pile.used.push(current[i]);
+		}
+		current = [];
+		recycle = 0;
 	};
 }
 
-// promos should rotate too!
-
-/*
-I was thinking about having one big stack, just skip the cards that aren't active. This sounded fine until I realized you might keep skipping the same cards while the set was inactive.  In that case, the pile method is better, but there are still two problems: promo distribution, and to a lesser extent, fairness in selecting the expansions.
-
-Okay, what if I use the "one big stack" algorithm, but instead of cards being in the stack, there were "vouchers" that allowed drawing from the pile?
-
-That really only makes the pile selection more fair, though.  Which is good, but that wasn't my biggest problem.  Although who knows, maybe my weird totalling-and-randomizing algorithm wasn't great anyway.  Draw until you hit a valid voucher probably isn't any worse, and it sounds easier to follow, at least.
-
-Sideways cards are another issue, but because there are only 2 I can probably get away with pure randomness.  Although again, Ways make it a little more complicated.
-
-Also, even with the voucher system, it's theoretically possible that you could overdraw from a pile.  Do we remove the vouchers while we shuffle?  If so, do we shuffle them back in when we're done, or put them in the "used" pile?  I think with vouchers it seems fine to put them back.
-
-*/
-
-
-function createSingleCardPile(promo) {
+function setupSingleCardGenerator(pile) {
 
 	let ready = true;
 
-	return {
-		size: function() {
-			return Number(ready);
-		},
-		draw: function() {
-			ready = false;
-			return promo;
-		},
-		finish: function() {
-			ready = true;
+	pile.size = function() {
+		return Number(ready);
+	};
+
+	pile.draw = function() {
+		// guard against overdrawing
+		if (!ready) {
+			throw pile;
 		}
+		ready = false;
+		return pile.name;
+	};
+
+	pile.finish = function() {
+		ready = true;
 	};
 }
 
-function isActive(release) {
+// var landscapeTypeTotals;
+var landscapeTotal;
+
+var totalChoices = 0;
+
+function generate() {
+	resetDisplay();
+	
+	landscapeTotal = 0;
+	let chosenCards = 0;
+	while (chosenCards < KINGDOM_SIZE) {
+		
+		let activePiles = piles.filter(pileActive);
+		let total = activePiles.reduce((running, pile) => running + pile.size(), 0);
+		for (let pile of activePiles) {
+			pile.rate = updateAverage(pile.rate, pile.count, pile.size() / total);
+			pile.count++;
+		}
+		let chosenPile = (totalChoices % 7 == 0 ? chooseFair : chooseRandom)(activePiles, total);
+		chosenPile.chosen++;
+		
+		let card = dominion[chosenPile.draw()];
+		updateDisplay(card);
+		if (card.landscape) {
+			landscapeTotal++;
+		} else {
+			chosenCards++;
+		}
+		
+		totalChoices++;
+	}
+	
+	for (let pile of piles) {
+		pile.finish();
+	}
+	
+	logStats();
+		
+	finishDisplay();
+	saveState();
+}
+
+function pileActive(release) {
 	if (!active[release.name]) {
 		return false;
 	}
@@ -256,35 +243,53 @@ function isActive(release) {
 	return landscapeTotal < landscapeLimit;
 }
 
-// var landscapeTypeTotals;
-var landscapeTotal;
-
-function generate() {
-	resetDisplay();
+function chooseRandom(activePiles, total) {
+	console.log('random');
+	let index = randInt(0, total);
+	for (let pile of activePiles) {
+		if (index < pile.size()) {
+			return pile;
+		}
+		index -= pile.size();
+	}
 	
-	landscapeTotal = 0;
-	let chosenCards = 0;
-	while (chosenCards < KINGDOM_SIZE) {
-		let activePiles = piles.filter(isActive);
-		let total = activePiles.reduce((running, pile) => running + pile.size(), 0);
-		let index = randInt(0, total);
-		for (let pile of activePiles) {
-			if (index < pile.size()) {
-				let item = getItem(pile);
-				updateDisplay(item);
-				if (item.landscape) {
-					landscapeTotal++;
-				} else {
-					chosenCards++;
-				}
-				break;
-			}
-			index -= pile.size;			
+	throw {
+		index: index, 
+		total: total, 
+		activePiles: activePiles
+	};
+}
+
+function chooseFair(activePiles, total) {
+	let fairPiles = activePiles.filter(hadFairShot);
+	if (fairPiles.length < 2) {
+		return chooseRandom(activePiles, total);
+	}
+	console.log('fair');
+	let best = fairPiles[0];
+	let leastFair = getFairness(best);
+	for (let i = 1; i < fairPiles.length; i++) {
+		let pile = fairPiles[i];
+		let fairness = getFairness(pile);
+		if (fairness < leastFair) {
+			best = pile;
+			leastFair = fairness;
 		}
 	}
-		
-	finishDisplay();
-	saveState();
+	console.log('fair=' + best.name);
+	return best;
+}
+
+function getFairness(pile) {
+	return (pile.chosen / pile.count - pile.rate) / pile.rate;
+}
+
+function hadFairShot(pile) {
+	return pile.count > 0 && (pile.rate * pile.count >= 1);
+}
+
+function updateAverage(average, size, value) {
+    return (size * average + value) / (size + 1);
 }
 
 function resetState() {
@@ -295,7 +300,7 @@ function saveState() {
 	localStorage.setItem('state', JSON.stringify({
 		active: active,
 		piles: piles,
-		history: setupHistory
+		setups: setupHistory
 	}));
 }
 
