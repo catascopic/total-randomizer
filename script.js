@@ -1,15 +1,17 @@
+'use strict';
+
 const KINGDOM_SIZE = 10;
-var landscapeLimit = 2;
-var landscapeTypeLimits = {
-	Way: 1
-};
+const LANDSCAPE_TYPES = ['Event', 'Project', 'Way', 'Landmark'];
 
 var dominion;
 
-var active = {};
-var piles = [];
-
+var active;
+var piles;
+var landscapeLimit;
+var landscapeTypeLimits;
 var setupHistory;
+var globalCounter;
+
 var currentSetup;
 
 function loadCards(json) {
@@ -31,16 +33,17 @@ function setupPiles(startingPiles) {
 		console.log('creating new session');
 	}
 	
-	if (!state) {
+	if (state) {
+		Object.assign(window, state);
+	} else {
 		active = {'Base': true};
 		piles = startingPiles;
-		initializePiles();
+		landscapeLimit = 2;
+		landscapeTypeLimits = {Way: 1};
 		setupHistory = [];
+		globalCounter = 0;
+		initializePiles();
 		saveState();
-	} else {
-		active = state.active;
-		piles = state.piles
-		setupHistory = state.setups;
 	}
 	loadGenerators();
 }
@@ -68,10 +71,13 @@ function loadGenerators() {
 function logStats() {
 	for (let pile of piles) {
 		if (pile.count) {
-			let actual = pile.chosen / pile.count;
-			console.log(`${pile.name.padStart(12)}: expected=${round(pile.rate).toString().padStart(5)}, actual=${round(actual).toString().padStart(5)}, d=${(actual - pile.rate) / pile.rate}`);
+			console.log(`${pileName(pile).padStart(20)}: expected=${Math.round(pile.rate * pile.count)}, actual=${pile.chosen}, d=${getFairness(pile)}`);
 		}
 	}
+}
+
+function pileName(pile) {
+	return pile.cards ? (pile.name + '/' + (pile.landscape || 'Card')) : pile.name;
 }
 
 function round(x) {
@@ -140,14 +146,12 @@ function setupSingleCardGenerator(pile) {
 	};
 }
 
-// var landscapeTypeTotals;
 var landscapeTotal;
-
-var totalChoices = 0;
+var landscapeTypeTotals;
 
 function generate() {
 	resetDisplay();
-	
+	landscapeTypeTotals = Object.fromEntries(LANDSCAPE_TYPES.map(x => [x, 0]));
 	landscapeTotal = 0;
 	let chosenCards = 0;
 	while (chosenCards < KINGDOM_SIZE) {
@@ -158,18 +162,17 @@ function generate() {
 			pile.rate = updateAverage(pile.rate, pile.count, pile.size() / total);
 			pile.count++;
 		}
-		let chosenPile = (totalChoices % 7 == 0 ? chooseFair : chooseRandom)(activePiles, total);
+		let chosenPile = (globalCounter++ % 7 == 0 ? chooseFair : chooseRandom)(activePiles, total);
 		chosenPile.chosen++;
 		
 		let card = dominion[chosenPile.draw()];
 		updateDisplay(card);
 		if (card.landscape) {
 			landscapeTotal++;
+			landscapeTypeTotals[card.landscape]++;
 		} else {
 			chosenCards++;
 		}
-		
-		totalChoices++;
 	}
 	
 	for (let pile of piles) {
@@ -182,18 +185,21 @@ function generate() {
 	saveState();
 }
 
-function pileActive(release) {
-	if (!active[release.name]) {
+function pileActive(pile) {
+	if (!active[pile.name]) {
 		return false;
 	}
-	if (!release.landscape) {
+	if (!pile.landscape) {
 		return true;
 	}
-	return landscapeTotal < landscapeLimit;
+	if (landscapeTotal >= landscapeLimit) {
+		return false;
+	}
+	let typeLimit = landscapeTypeLimits[pile.landscape];
+	return typeLimit == null || landscapeTypeTotals[pile.landscape] < typeLimit;
 }
 
 function chooseRandom(activePiles, total) {
-	console.log('random');
 	let index = randInt(0, total);
 	for (let pile of activePiles) {
 		if (index < pile.size()) {
@@ -214,7 +220,6 @@ function chooseFair(activePiles, total) {
 	if (fairPiles.length < 2) {
 		return chooseRandom(activePiles, total);
 	}
-	console.log('fair');
 	let best = fairPiles[0];
 	let leastFair = getFairness(best);
 	for (let i = 1; i < fairPiles.length; i++) {
@@ -225,16 +230,17 @@ function chooseFair(activePiles, total) {
 			leastFair = fairness;
 		}
 	}
-	console.log('fair=' + best.name);
+	console.log('fair=' + pileName(best));
 	return best;
 }
 
 function getFairness(pile) {
-	return (pile.chosen / pile.count - pile.rate) / pile.rate;
+	let expected = pile.rate * pile.count;
+	return (pile.chosen - expected) / expected;
 }
 
 function hadFairShot(pile) {
-	return pile.count > 0 && (pile.rate * pile.count >= 1);
+	return pile.rate * pile.count >= 1;
 }
 
 function updateAverage(average, size, value) {
@@ -249,7 +255,10 @@ function saveState() {
 	localStorage.setItem('state', JSON.stringify({
 		active: active,
 		piles: piles,
-		setups: setupHistory
+		landscapeLimit: landscapeLimit,
+		landscapeTypeLimits: landscapeTypeLimits,
+		setupHistory: setupHistory,
+		globalCounter: globalCounter
 	}));
 }
 
