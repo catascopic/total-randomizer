@@ -14,6 +14,8 @@ var globalCounter;
 
 var currentSetup;
 
+var pileLookup = {};
+
 function loadCards(json) {
 	dominion = json;
 }
@@ -42,13 +44,13 @@ function setupPiles(startingPiles) {
 		landscapeTypeLimits = {Way: 1};
 		setupHistory = [];
 		globalCounter = 0;
-		initializePiles();
+		initializeStartingPiles();
 		saveState();
 	}
-	loadGenerators();
+	initializePiles();
 }
 
-function initializePiles() {
+function initializeStartingPiles() {
 	for (let pile of piles) {
 		if (pile.cards) {
 			shuffle(pile.cards);
@@ -60,8 +62,20 @@ function initializePiles() {
 	}
 }
 
-function loadGenerators() {
+function initializePiles() {
 	for (let pile of piles) {
+		
+		if (pile.cards) {
+			let setLookup = pileLookup[pile.name];
+			if (!setLookup) {
+				setLookup = {};
+				pileLookup[pile.name] = setLookup;
+			}
+			setLookup[pile.landscape || 'Card'] = pile;
+		} else {
+			pileLookup[pile.name] = pile;
+		}
+		
 		pile.generator = pile.cards
 			? setupGenerator(pile)
 			: setupSingleCardGenerator(pile);
@@ -106,9 +120,9 @@ function setupGenerator(pile) {
 			// the current cards missed the shuffle, so mark their position so we can shuffle them back in
 			recycle = current.length;
 		}
-		let card = pile.cards.pop();
-		current.push(card);
-		return card;
+		let cardName = pile.cards.pop();
+		current.push(cardName);
+		return cardName;
 	};
 	
 	pile.finish = function() {
@@ -121,6 +135,14 @@ function setupGenerator(pile) {
 		}
 		current = [];
 		recycle = 0;
+	};
+	
+	pile.discard = function(cardName) {
+		let i = pile.cards.indexOf(cardName);
+		if (i != -1) {
+			pile.cards.splice(i, 1);
+			pile.used.push(cardName);
+		}
 	};
 }
 
@@ -144,6 +166,13 @@ function setupSingleCardGenerator(pile) {
 	pile.finish = function() {
 		ready = true;
 	};
+}
+
+function discard(cardName) {
+	let card = dominion[cardName];
+	if (card.set != 'Promo') {
+		pileLookup[card.set][card.landscape || 'Card'].discard(cardName);
+	}
 }
 
 var landscapeTotal;
