@@ -1,56 +1,56 @@
-.Action, .action {
+.action {
 	background-color: Gainsboro;
 	color: black;
 }
 
-.Reaction, .reaction {
+.reaction {
 	background-color: #4F94CD; /* steelblue */
 	color: black;
 }
 
-.Treasure, .treasure {
+.treasure {
 	background-color: #FBDB0C; /* gummi yellow */
 	color: black;
 }
 
-.Victory, .victory {
+.victory {
 	background-color: #7BCC70; /* nightvision */
 	color: black;
 }
 
-.Reserve, .reserve {
+.reserve {
 	background-color: #B5A642; /* brass */
 	color: black;
 }
 
-.Night, .night {
+.night {
 	background-color: DimGray;
 	color: white;
 }
 
-.Duration, .duration {
+.duration {
 	background-color: #ED9121; /* carrot */
 	color: black;
 }
 
 /* Landscapes */
 
-.Event, .event {
+.event {
 	background-color: Silver;
 	color: black;
 }
 
-.Landmark, .landmark {
+.landmark {
 	background-color: #55AE3A; /* leaf */
 	color: black;
 }
 
-.Project, .project {
+.project {
 	background-color: LightCoral;
 	color: black;
 }
 
-.Way, .way {
+.way {
 	background-color: #82CFFD; /* blue mist */
 	color: black;
 }

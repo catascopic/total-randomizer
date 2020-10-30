@@ -1,7 +1,7 @@
 'use strict';
 
 const KINGDOM_SIZE = 10;
-const LANDSCAPE_TYPES = ['Event', 'Project', 'Way', 'Landmark'];
+const LANDSCAPE_TYPES = ['event', 'project', 'way', 'landmark'];
 
 var dominion;
 
@@ -17,7 +17,7 @@ var currentSetup;
 var pileLookup = {};
 
 function loadCards(json) {
-	dominion = json;
+	dominion = json;	
 }
 
 function setupPiles(startingPiles) {
@@ -38,10 +38,10 @@ function setupPiles(startingPiles) {
 	if (state) {
 		Object.assign(window, state);
 	} else {
-		active = {'Base': true};
+		active = {Base: true};
 		piles = startingPiles;
 		landscapeLimit = 2;
-		landscapeTypeLimits = {Way: 1};
+		landscapeTypeLimits = {way: 1};
 		setupHistory = [];
 		globalCounter = 0;
 		initializeStartingPiles();
@@ -64,38 +64,14 @@ function initializeStartingPiles() {
 
 function initializePiles() {
 	for (let pile of piles) {
-		
 		if (pile.cards) {
-			let setLookup = pileLookup[pile.name];
-			if (!setLookup) {
-				setLookup = {};
-				pileLookup[pile.name] = setLookup;
-			}
-			setLookup[pile.landscape || 'Card'] = pile;
+			computeIfAbsent(pileLookup, pile.name, Object)
+				[pile.landscape || 'card'] = pile;
+			setupGenerator(pile);
 		} else {
-			pileLookup[pile.name] = pile;
-		}
-		
-		pile.generator = pile.cards
-			? setupGenerator(pile)
-			: setupSingleCardGenerator(pile);
-	}
-}
-
-function logStats() {
-	for (let pile of piles) {
-		if (pile.count) {
-			console.log(`${pileName(pile).padStart(20)}: expected=${Math.round(pile.rate * pile.count)}, actual=${pile.chosen}, d=${getFairness(pile)}`);
+			setupSingleCardGenerator(pile);
 		}
 	}
-}
-
-function pileName(pile) {
-	return pile.cards ? (pile.name + '/' + (pile.landscape || 'Card')) : pile.name;
-}
-
-function round(x) {
-	return Math.round(x * 10000) / 100;
 }
 
 function setupGenerator(pile) {
@@ -140,7 +116,7 @@ function setupGenerator(pile) {
 	pile.discard = function(cardName) {
 		let i = pile.cards.indexOf(cardName);
 		if (i != -1) {
-			pile.cards.splice(i, 1);
+			pile.cards[i] = pile.cards.pop();
 			pile.used.push(cardName);
 		}
 	};
@@ -171,7 +147,7 @@ function setupSingleCardGenerator(pile) {
 function discard(cardName) {
 	let card = dominion[cardName];
 	if (card.set != 'Promo') {
-		pileLookup[card.set][card.landscape || 'Card'].discard(cardName);
+		pileLookup[card.set][card.landscape || 'card'].discard(cardName);
 	}
 }
 
@@ -180,7 +156,7 @@ var landscapeTypeTotals;
 
 function generate() {
 	resetDisplay();
-	landscapeTypeTotals = Object.fromEntries(LANDSCAPE_TYPES.map(x => [x, 0]));
+	landscapeTypeTotals = {};
 	landscapeTotal = 0;
 	let chosenCards = 0;
 	while (chosenCards < KINGDOM_SIZE) {
@@ -191,14 +167,14 @@ function generate() {
 			pile.rate = updateAverage(pile.rate, pile.count, pile.size() / total);
 			pile.count++;
 		}
-		let chosenPile = (globalCounter++ % 7 == 0 ? chooseFair : chooseRandom)(activePiles, total);
+		let chosenPile = getChoosingStrategy()(activePiles, total);
 		chosenPile.chosen++;
 		
 		let card = dominion[chosenPile.draw()];
 		updateDisplay(card);
 		if (card.landscape) {
 			landscapeTotal++;
-			landscapeTypeTotals[card.landscape]++;
+			increment(landscapeTypeTotals, card.landscape, 1);
 		} else {
 			chosenCards++;
 		}
@@ -214,6 +190,10 @@ function generate() {
 	saveState();
 }
 
+function getChoosingStrategy() {
+	return globalCounter++ % 7 == 0 ? chooseFair : chooseRandom;
+}
+
 function pileActive(pile) {
 	if (!active[pile.name]) {
 		return false;
@@ -225,7 +205,8 @@ function pileActive(pile) {
 		return false;
 	}
 	let typeLimit = landscapeTypeLimits[pile.landscape];
-	return typeLimit == null || landscapeTypeTotals[pile.landscape] < typeLimit;
+	return typeLimit == null
+		|| (landscapeTypeTotals[pile.landscape] || 0) < typeLimit;
 }
 
 function chooseRandom(activePiles, total) {
@@ -292,17 +273,14 @@ function saveState() {
 }
 
 var displayers = {};
-const SETS = [
-	'Base', 'Intrigue', 'Seaside', 'Alchemy', 'Prosperity', 'Hinterlands', 
-	'Dark Ages', 'Cornucopia', 'Guilds', 'Adventures', 'Empires', 'Nocturne',
-	'Renaissance', 'Menagerie', 'Promo'
-];
 
 window.onload = function() {
 	let kingdom = document.getElementById('kingdom');
-	for (let setName of SETS) {
+	// relies on insertion order for set names
+	for (let setName of Object.keys(pileLookup)) {
 		displayers[setName] = createSet(setName, kingdom);
 	}
+	displayers['Promo'] = createSet('Promo', kingdom);
 };
 
 function resetDisplay() {
@@ -353,36 +331,20 @@ function compareTruthy(t1, t2) {
 	return Number(Boolean(t1)) - Number(Boolean(t2));
 }
 
-const LANDSCAPE_ORDER = {Event: 1, Project: 2, Way: 3, Landmark: 4};
+const LANDSCAPE_ORDER = {event: 1, project: 2, way: 3, landmark: 4};
 
 function landscapeIndex(card) {
 	return LANDSCAPE_ORDER[card.landscape] || 0;
 }
 
-// assumes the array is already shuffled
-function randomInsert(array, item) {
-	let index = randInt(0, array.length + 1);
-	// if index == length, we push undefined here, which is fine
-	array.push(array[index]);
-	array[index] = item;
+function pileName(pile) {
+	return (pile.cards && pile.landscape) ? (pile.name + ' (' + (pile.landscape || 'card') + ')') : pile.name;
 }
 
-function shuffleRange(array, start, end) {
-	for (let i = end - 1; i > start; i--) {
-		swap(array, i, randInt(start, i + 1));
+function logStats() {
+	for (let pile of piles) {
+		if (pile.count) {
+			console.log(`${pileName(pile).padStart(20)}: expected=${Math.round(pile.rate * pile.count)}, actual=${pile.chosen}, d=${Math.round(getFairness(pile) * 10000) / 100}%`);
+		}
 	}
-}
-
-function shuffle(array) {
-	shuffleRange(array, 0, array.length);
-}
-
-function randInt(origin, bound) {
-    return Math.floor(Math.random() * (bound - origin)) + origin;
-}
-
-function swap(array, i, j) {
-	let temp = array[i];
-	array[i] = array[j];
-	array[j] = temp;
 }
