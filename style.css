@@ -124,7 +124,7 @@
 	display: none;
 }
 
-:not(.selectable) {
+:not(.selectable):not(textarea):not(input) {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;

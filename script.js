@@ -295,7 +295,7 @@ function updateDisplay(card) {
 	displayers[card.set].update(card);
 }
 
-function finishDisplay(card) {
+function finishDisplay() {
 	currentSetup.sort(compareCard);
 	setupHistory.push({
 		setup: currentSetup,
@@ -307,24 +307,25 @@ function finishDisplay(card) {
 	}
 }
 
+function loadKingdom() {
+	resetDisplay();
+	let lines = document.getElementById('kingdom-input').value.split('\n');
+	for (let line of lines) {
+		updateDisplay(dominion[line]);
+	}
+	finishDisplay();
+}
+
+const CARD_CMP = [landscapeIndex, c => c.coins || 0, c => c.debt || 0, c => c.potion || 0, c => c.name];
+
 function compareCard(c1, c2) {
-	let landscapeSign = landscapeIndex(c1) - landscapeIndex(c2);
-	if (landscapeSign != 0) {
-		return landscapeSign;
+	for (let cmp of CARD_CMP) {
+		let sign = cmp(c1) - cmp(c2);
+		if (sign != 0) {
+			return sign;
+		}
 	}
-	let coinsSign = (c1.coins || 0) - (c2.coins || 0);
-	if (coinsSign != 0) {
-		return coinsSign;
-	}
-	let debtSign = (c1.debt || 0) - (c2.debt || 0);
-	if (debtSign != 0) {
-		return debtSign;
-	}
-	let potionSign = compareTruthy(c1.potion, c2.potion);
-	if (potionSign != 0) {
-		return potionSign;
-	}
-	return c1.name.localeCompare(c2.name);
+	return 0;
 }
 
 function compareTruthy(t1, t2) {
